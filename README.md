@@ -1,3 +1,9 @@
+---
+impact: LOW
+impactDescription: "Standalone repo README with setup instructions and overview -- not loaded by Claude Code"
+tags: "readme,setup,overview"
+---
+
 # Cancer Predisposition Variant Analyst
 
 A Claude Code skill for interpreting ultra-rare variants in cancer predisposition genes -- specifically the cases where the genotype shouldn't produce the phenotype you're looking at, but it does anyway.
