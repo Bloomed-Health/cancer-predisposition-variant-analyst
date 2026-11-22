@@ -20,7 +20,7 @@ Network notes: all four call public endpoints without credentials. VariantValida
 python3 scripts/hgvs_validate.py 'NM_006231.4:c.158_159del' [--assembly GRCh38|GRCh37] [--transcript NM_...] [--max-met 10] [--json]
 ```
 
-Pipeline: VariantValidator (`/VariantValidator/variantvalidator/<assembly>/<hgvs>/<transcript>`), then Ensembl `xrefs/symbol` (RefSeq -> ENST), `lookup/id/<ENST>?expand=1` (exons, translation bounds) and `sequence/id/<ENST>?type=cdna`. The CDS is rebuilt from the exon model, the edit (sub/del/dup/ins/delins/inv in coding positions) is applied and re-translated, reading into the 3' UTR, so the PTC is derived independently of the protein HGVS; the two are compared and any mismatch is printed as a note. NMD rule: PTC more than 55 nt upstream of the last exon-exon junction -> NMD predicted; last exon, or penultimate exon within 55 nt -> escape. Extra flags for start-proximal PTCs (first 150 nt of CDS) and long exons (>400 nt), both associated with inefficient NMD [M12]. Kozak classes: -3 purine and +4 G = strong; one of the two = adequate; neither = weak.
+Pipeline: VariantValidator (`/VariantValidator/variantvalidator/<assembly>/<hgvs>/<transcript>`), then Ensembl `xrefs/symbol` (RefSeq -> ENST), `lookup/id/<ENST>?expand=1` (exons, translation bounds) and `sequence/id/<ENST>?type=cdna`. The CDS is rebuilt from the exon model, the edit (sub/del/dup/ins/delins/inv in coding positions) is applied and re-translated, reading into the 3' UTR, so the consequence and PTC are derived independently of the protein HGVS; the two are compared and any mismatch is printed as a note. The native-stop test is frame-aware: in-frame indels are reported as `p.(Phe508del)` / `p.(Xxx_YyydelinsZzz)` and are not truncating, a lost stop is reported as `p.(Ter394Argext*9)`. NMD rule: PTC more than 55 nt upstream of the last exon-exon junction -> NMD predicted; last exon, or within 55 nt of the last junction -> escape. Extra flags for start-proximal PTCs (first 150 nt of CDS; 150-200 nt is flagged `borderline`) and long exons (>400 nt), both associated with inefficient NMD [M12]. Kozak classes: -3 purine and +4 G = strong; one of the two = adequate; neither = weak.
 
 Intronic / UTR / complex descriptions are validated but not re-translated (noted in output). Exon ordinals are Ensembl transcript order; VariantValidator's ordinal is printed alongside and a note is raised if they differ.
 
@@ -112,6 +112,7 @@ ClinVar  POLE  type=truncating  query: POLE[gene] AND ("frameshift variant"[mcns
        26     4     7     0    15     0  Colorectal cancer, susceptibility to, 12
        14     5     0     0     9     0  Intrauterine growth retardation, metaphyseal dysplasia, adrenal hypoplasia congenita, genital anomalies, and immunodeficiency
        14     4     0     0    10     0  POLE-related disorder
+       13     0     5     0     8     0  not specified
        12     3     0     0     9     0  Facial dysmorphism-immunodeficiency-livedo-short stature syndrome
   By submitter (germline SCVs across the 678 Variation IDs; top 15):
       514  Pathogenic                               Labcorp Genetics (formerly Invitae), Labcorp
@@ -120,6 +121,15 @@ ClinVar  POLE  type=truncating  query: POLE[gene] AND ("frameshift variant"[mcns
        20  Uncertain significance                   GeneDx
        20  Uncertain significance                   Counsyl
        15  Uncertain significance                   Labcorp Genetics (formerly Invitae), Labcorp
+       12  Likely pathogenic                        PreventionGenetics, part of Exact Sciences
+       10  Uncertain significance                   Mendelics
+        7  Uncertain significance                   St. Jude Molecular Pathology, St. Jude Children's Research Hospital
+        6  Likely pathogenic                        Blueprint Genetics
+        4  Uncertain significance                   Quest Diagnostics Nichols Institute San Juan Capistrano
+        3  Likely pathogenic                        Juno Genomics, Hangzhou Juno Genomics, Inc
+        3  Likely pathogenic                        EVOGEN
+        3  Pathogenic                               Women's Health and Genetics/Laboratory Corporation of America, LabCorp
+        3  Likely pathogenic                        Center for Genomic Medicine, Rigshospitalet, Copenhagen University Hospital
 ```
 
 Reading: the headline "46.5% P/LP" is not evidence that POLE LoF causes PPAP. 295/301 Pathogenic aggregates are single-laboratory, 1-star calls with condition "not provided" (514 Pathogenic SCVs from Labcorp Genetics/Invitae), and 214/216 conflicts are that Pathogenic call paired with a VUS from a hereditary-cancer-panel submitter (216/216 contain a VUS; Ambry alone contributes 334 VUS SCVs). Restricted to records filed under "Hereditary cancer-predisposing syndrome", the split is 0 P/LP, 125 VUS, 209 conflicting, 0 B/LB (n = 334). Under the PPAP-specific condition names (`--condition colorectal --condition polyposis`, n = 30): 5 P/LP, 7 VUS, 18 conflicting, 0 B/LB; the 5 P/LP are all single-submitter, 1-star records (EVOGEN x2, KCCC Kuwait x1, Labcorp Genetics x1, NCI Genomic Center x1), none with multi-submitter concordance or expert-panel review. The P/LP calls that carry a syndromic condition name are the recessive FILS / IMAGe-I phenotypes (biallelic POLE), where truncating alleles are a recognised mechanism. Net: no expert-panel or multi-submitter-concordant P/LP exists for a truncating POLE allele in the dominant PPAP context, and 0/678 truncating records are B/LB, which is the expected steady state when LoF is not the disease mechanism and PVS1 is not applied [C7]: the default lands at VUS, not benign.
@@ -150,3 +160,34 @@ ClinVar  variant NM_006231.4:c.158_159del
 ```
 
 Without `--gene`/`--position` the same variant gives the first two searches and `ABSENT: no ClinVar record for this HGVS`. So c.158_159del itself is absent from ClinVar (and from gnomAD v4.1 / v2.1.1 non-cancer); the only records at the base are two synonymous Leu53= changes. Positive control: `--variant 'NM_007294.4:c.68_69del'` returns VCV000017662 (BRCA1 185delAG), Pathogenic, reviewed by expert panel, 98 submissions.
+
+## check_refs.py
+
+```
+python3 scripts/check_refs.py [--file references.md] [--only PREFIX] [--strict] [--json]
+```
+
+Resolves every `ID` in the `references.md` tables against its authority (`doi:` Crossref, `pmid:`/`pmcid:`/`omim:` NCBI esummary, `nct:` ClinicalTrials.gov v2, `pdb:` RCSB, `uniprot:` UniProt REST, `url:` HEAD then GET, 2xx/3xx OK; a 403 from `nccn.org` is reported OK with a warning because it is login-walled). Before resolving it also checks that every data row of a table with a `Ref` column produced exactly one entry (a row with a missing or unparseable ID cell is a FAIL, never silently skipped) and that every reference-shaped `[ID]` cited in `*.md`, `examples/*.md`, `evals/*.md` and `scripts/README.md` (prefixes F, C, G, M, P, T, N, R, O, S, CT, SIG, D, TOOL; ACMG codes like `[PS2]` are ignored) is defined in `references.md`.
+
+For `doi:`/`pmid:`/`pmcid:` entries the resolved publication year and author list are compared with the `Citation` cell when it has the form `Surname et al. YEAR` / `Surname YEAR`: a year differing by more than one (online-first vs print tolerance) or a cited surname that is not the first author produces a `WARN` line; with `--strict` those become `FAIL`. `--only` restricts the resolver pass to a Ref prefix (`CT`, `M`) or ID scheme (`pmid`); the structural checks always run. Exit `0` all OK, `1` any FAIL or an unreadable `--file`, `2` usage error.
+
+Trimmed live output (OK lines removed), 2026-11-22:
+
+```
+OK   table  references.md -> 101 data rows, 101 entries
+OK   cite   82 distinct [ID] tokens cited, 0 undefined
+
+101/101 OK, 0 FAIL, 0 WARN
+```
+
+CI (`.github/workflows/check-refs.yml`) runs the default (non-strict) check on pushes to `main`, pull requests touching markdown or `scripts/`, weekly, and on demand (`workflow_dispatch` input `only`), on Python 3.10 and 3.12, and echoes the FAIL/WARN lines at the end of the log.
+
+## Tests
+
+Offline unit tests for the pure functions of `hgvs_validate.py` (`translate`, `parse_c`, `apply_edit`, `ptc_from_protein_hgvs`, `protein_consequence`, `kozak_class`, `reinitiation_scan`, `annotate`) run against a toy 3-exon transcript, no network:
+
+```
+python3 -m unittest discover -s scripts/tests
+```
+
+They cover early PTC -> NMD, last-exon and penultimate-exon (<= 55 nt) escape, missense, in-frame deletion, stop-loss extension, frameshift without a protein HGVS, PTC mismatch notes and the Kozak scan. CI runs them as the `unit-tests` job.

@@ -61,7 +61,7 @@ with an explicit "not Likely Pathogenic".
 - H1 reinitiation at Met66 (and Met359 as a strong-Kozak alternative), with BRCA1 c.68_69del Met297 precedent [M8]
 - Minimum experiment set: N- vs C-terminal immunoblot, mass spec of truncated species, Met66 knock-in ± Met→Ala, tumour allele-specific expression / second-hit analysis
 - Explicit "VUS, not LP"; Bayesian points tally ≤5 [C8]
-- PP4 note: Castillejo PP4_Strong requires ≥2 tumours with POLE signatures ≥5% [C1]
+- PP4 note: Mur 2023 [C1] PP4_Strong requires ≥2 tumours with POLE signatures ≥5% [C1]
 
 **Must not include**
 - SBS28 described as a POLD1 / Pol δ signature

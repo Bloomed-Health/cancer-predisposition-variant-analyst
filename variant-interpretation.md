@@ -204,7 +204,7 @@ POLE (Q07864, 2,286 aa) — approximate boundaries:
 - **The PCNA interface is NOT in this region.** The three PCNA contacts are the
   P-domain (His684–Lys729), the thumb (Glu1085, Ser1117) and the PIP-motif at
   aa 1180–1187 [M3]; a ΔN65 product retains all of them.
-- Exonuclease domain aa 268–471 (Castillejo 2023 boundaries [C1]); all PPAP
+- Exonuclease domain aa 268–471 (Mur 2023 boundaries [C1]); all PPAP
   EDM hotspots lie here
 - Polymerase domain approx. aa 520–1180
 - **aa 1–65 contain NO CMG surface.** CMG/GINS binding is mediated entirely by
@@ -324,7 +324,7 @@ established disease mechanism for the gene–disease pair:
 | -> PVS1                                              | **NOT APPLIED** at any strength (there is no "Moderate" fallback for an unestablished mechanism) |
 | For reference only, if LoF were established:         | NMD-predicted PTC -> Very Strong; NMD-escape with critical region lost -> Strong; NMD-escape, non-critical region, >10% protein removed -> Moderate; 3′-terminal small truncation -> Supporting/none |
 
-### Tumour-signature criteria from Castillejo 2023 [C1]
+### Tumour-signature criteria from Mur 2023 [C1]
 
 | Code       | Specification                                                                                                                     | Use for a non-ED allele                                                                                            |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |

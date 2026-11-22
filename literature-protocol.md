@@ -129,7 +129,7 @@ PolED [C2]: any functional data on N-terminal or truncating POLE alleles
 - Mur et al. 2020 [P6]: POLE LoF 0.22% in cancer cases vs 0.20% controls.
 - ClinVar [D2]: distribution of POLE truncating classifications for PPAP
   (`scripts/clinvar_lookup.py --gene POLE --type truncating`).
-- Castillejo 2023 [C1]: scope limited to exonuclease-domain variants; no LoF
+- Mur 2023 [C1]: scope limited to exonuclease-domain variants; no LoF
   criteria defined because LoF is not the mechanism.
 
 ---
