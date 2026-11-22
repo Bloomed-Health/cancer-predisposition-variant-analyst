@@ -84,7 +84,7 @@ selectively essential in many human cell lines, but it is not DepMap
 common-essential in the way POLE is [M10]; tumours routinely become BRCA1-null
 by LOH. The "null + LOH" route is therefore **viable** for BRCA1 and is in fact
 the standard HBOC second hit. This is exactly the pre-check that excludes the
-same route for POLE ([mechanistic-framework.md](../mechanistic-framework.md#pre-checks-essential-gene-filter-and-signature-fork)).
+same route for POLE ([mechanistic-framework.md](../references/mechanistic-framework.md#pre-checks-essential-gene-filter-and-signature-fork)).
 
 | Rank | Hypothesis                                                   | Prediction                                              | Status                                     |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------ |
@@ -96,7 +96,7 @@ Discriminating experiments (as applied in [M8]): N-terminal vs C-terminal
 anti-BRCA1 immunoblot; mass spectrometry of the truncated species; CRISPR
 knock-in of the allele with and without Met297→Ala; PARPi/cisplatin dose–response.
 The same four experiments are the minimum set proposed for POLE Met66
-([mechanistic-framework.md](../mechanistic-framework.md#minimum-discriminating-experiment-set)).
+([mechanistic-framework.md](../references/mechanistic-framework.md#minimum-discriminating-experiment-set)).
 
 ---
 

@@ -91,9 +91,20 @@ All notable changes to this skill are documented here. Format follows
 - New reference IDs C7–C13, M8–M12, P7–P8, T9, SIG6.
 - G1 (NCCN colorectal high-risk guideline), S7 (BRCA1 UniProt), CT2/CT4/CT5 verified trials
   (NCT03810339, NCT03639714, NCT03435107).
+- `scripts/pdb_contacts.py`: residue-contact census on any PDB chain segment (RCSB mmCIF,
+  stdlib). Run on 9B8S chain A 25–65: the POLE N-terminal helix Arg37–Phe50 makes 24 heavy-atom
+  contacts with exonuclease-domain residues 352–357, 384–390, 400–403 (Arg47–Glu386 2.4 Å; 15 Å
+  from Exo II Asp368); residues 51–65 are buried in the NTD core. H1 now cites this measurement
+  instead of a guess, and the first recommended experiment is purified ΔN65 exo/fidelity assay.
+- P9 (Bray 2024, GLOBOCAN 2022) cited for the ~1.9 M CRC/year denominator in the coincidence prior.
+- Brnich 2020 [C9] OddsPath thresholds re-read from the full text (BS3 <0.053 / <0.23 moderate /
+  <0.48 supporting; indeterminate 0.48–2.1; PS3 >2.1 / >4.3 / >18.7 / >350 very strong).
 
 ### Changed
 
+- Layout follows the Agent Skills convention: the six companion documents moved to
+  `references/` (`references/references.md` is the bibliography); `examples/`, `evals/`,
+  `scripts/` unchanged. All deep links, `check_refs.py` defaults and the citation scan updated.
 - Workflow expanded from five steps to six (0–5), with deep links to exact section headings.
 - "Why this is paradigm-shifting" box rewritten as a neutral "Why this is a paradox" box that
   states the two cheap resolutions (coincidence; reinitiation).

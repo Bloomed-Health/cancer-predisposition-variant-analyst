@@ -11,15 +11,15 @@ That discipline -- and the reasoning framework around it -- is what this skill e
 | File | What it does |
 |------|-------------|
 | `SKILL.md` | Entry point. Trigger clauses, six-step workflow (0–5), guardrails, sub-file index |
-| `variant-interpretation.md` | Step 0 phenocopy exclusion, molecular characterization, NMD prediction, ACMG/ClinGen criteria with Bayesian points |
-| `mechanistic-framework.md` | Essential-gene filter, signature fork, ranked hypotheses, discriminating experiments, generalizable template |
-| `literature-protocol.md` | Structured search strategy, evidence grading, gap analysis template |
-| `therapeutic-mapping.md` | ICI, ATR inhibitors, nucleoside analogs, neoantigen vaccines, biomarker strategy |
-| `quick-reference.md` | POLE/POLD1 variant class comparison, mutational signature table, 2024–2026 literature updates |
-| `references.md` | Stable reference IDs (F1, M1, T2, etc.) used across all files; every row carries a machine-checkable ID |
+| `references/variant-interpretation.md` | Step 0 phenocopy exclusion, molecular characterization, NMD prediction, ACMG/ClinGen criteria with Bayesian points |
+| `references/mechanistic-framework.md` | Essential-gene filter, signature fork, ranked hypotheses, discriminating experiments, generalizable template |
+| `references/literature-protocol.md` | Structured search strategy, evidence grading, gap analysis template |
+| `references/therapeutic-mapping.md` | ICI, ATR inhibitors, nucleoside analogs, neoantigen vaccines, biomarker strategy |
+| `references/quick-reference.md` | POLE/POLD1 variant class comparison, mutational signature table, 2013–2026 literature updates |
+| `references/references.md` | Stable reference IDs (F1, M1, T2, etc.) used across all files; every row carries a machine-checkable ID |
 | `examples/brca1-c68_69del.md` | Second worked example: BRCA1 185delAG, reinitiation to RING-less BRCA1, PARPi resistance |
 | `evals/README.md` | Manual eval prompts with expected behaviours and failure modes |
-| `scripts/` | Optional stdlib-only Python helpers (HGVS validation, gnomAD, ClinVar, reference link check) |
+| `scripts/` | Optional stdlib-only Python helpers (HGVS validation, gnomAD, ClinVar, PDB contact census, reference check) |
 | `CHANGELOG.md` | Version history |
 
 ## What it's for
@@ -74,14 +74,14 @@ the ACMG evidence.
 
 Claude will follow the skill's six-step workflow: verify and exclude phenocopies (Step 0), characterize, hypothesize, classify, search, and map to therapeutics.
 
-The reference IDs (like [M1], [T2], [C2]) that appear in Claude's responses trace back to `references.md` -- curated sources with URLs, all verified as of 2026-11-22.
+The reference IDs (like [M1], [T2], [C2]) that appear in Claude's responses trace back to `references/references.md` -- curated sources with URLs, all verified as of 2026-11-22.
 
 ## Maintenance
 
-- Run `python3 scripts/check_refs.py` to check that every reference ID in `references.md` still resolves (DOI/PMID/OMIM/NCT/PDB/UniProt/URL), that every table row carries one, and that every `[ID]` cited in the skill files is defined there; add `--strict` to fail on year/first-author mismatches with the Citation column.
+- Run `python3 scripts/check_refs.py` to check that every reference ID in `references/references.md` still resolves (DOI/PMID/OMIM/NCT/PDB/UniProt/URL), that every table row carries one, and that every `[ID]` cited in the skill files is defined there; add `--strict` to fail on year/first-author mismatches with the Citation column.
 - When you re-verify the literature, update `last_verified` in the `SKILL.md` frontmatter and the "verified as of" date above.
 - Add a `CHANGELOG.md` entry for every content change (Keep a Changelog format).
-- The helper scripts in `scripts/` are optional; the skill works without them. They are stdlib-only Python 3.10+ but need network access (Ensembl, gnomAD, ClinVar, publisher URLs).
+- The helper scripts in `scripts/` are optional; the skill works without them. They are stdlib-only Python 3.10+ but need network access (Ensembl, gnomAD, ClinVar, RCSB, publisher URLs). `python3 -m unittest discover -s scripts/tests` runs the offline tests.
 
 ## Scope and limits
 

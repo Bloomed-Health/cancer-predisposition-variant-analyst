@@ -101,6 +101,7 @@ C8 note: Tavtigian 2020 was published in Hum Mutat (the 2018 Bayesian framework 
 | P6  | Mur et al. 2020, _Genet Med_                    | `doi:10.1038/s41436-020-0922-2`     | [Nature](https://www.nature.com/articles/s41436-020-0922-2)                              | Role of POLE and POLD1 in familial cancer: heterozygous LoF 0.22% in cases vs 0.20% controls (~1/500) -- no enrichment                                           |
 | P7  | Palles et al. 2022, _Am J Hum Genet_            | `pmid:35460607`                     | [PubMed](https://pubmed.ncbi.nlm.nih.gov/35460607/)                                      | Germline biallelic MBD4 deficiency: polyposis / multi-tumour syndrome (phenocopy to exclude)                                                                      |
 | P8  | Weren et al. 2015, _Nat Genet_                  | `pmid:25938944`                     | [PubMed](https://pubmed.ncbi.nlm.nih.gov/25938944/)                                      | NTHL1-associated polyposis (homozygous NTHL1 LoF) -- recessive polyposis phenocopy                                                                               |
+| P9  | Bray et al. 2024, _CA Cancer J Clin_ (GLOBOCAN 2022) | `pmid:38572751`                  | [PubMed](https://pubmed.ncbi.nlm.nih.gov/38572751/)                                      | ~20 million new cancers in 2022; colorectal 9.6% (~1.9 million) -- denominator for the coincidence prior                                                       |
 
 ---
 
@@ -161,7 +162,7 @@ OMIM blocks scripted HTML access (HTTP 403); `check_refs.py` resolves `omim:` vi
 
 | Ref | Database     | ID                | Description                                                                                            | URL                                                        |
 | --- | ------------ | ----------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| S1  | PDB          | `pdb:9B8S`        | Human Pol-epsilon-PCNA-DNA holoenzyme, nucleotide-exchange state (He 2024 [M3]; companion 9B8T = nucleotide-bound) | [RCSB](https://www.rcsb.org/structure/9B8S)     |
+| S1  | PDB          | `pdb:9B8S`        | Human Pol-epsilon (D275A/E277A) -PCNA-DNA holoenzyme, nucleotide-exchange state (He 2024 [M3]; companion 9B8T). Chain A models POLE aa 27-1198 (gap 185-211); helix Arg37-Phe50 contacts exo residues 352-403 | [RCSB](https://www.rcsb.org/structure/9B8S)     |
 | S2  | PDB          | `pdb:7PFO`        | Core human replisome: CMG-Pol-epsilon-TIMELESS-TIPIN-CLASPIN-AND-1 (Jones et al. 2021, EMBO J)        | [RCSB](https://www.rcsb.org/structure/7PFO)                |
 | S3  | PDB          | `pdb:6WJV`        | S. cerevisiae Pol-epsilon holoenzyme; basis for leading-strand replisome model (Yuan 2020 [M7])        | [RCSB](https://www.rcsb.org/structure/6WJV)                |
 | S4  | PDB          | `pdb:8TWA`        | S. cerevisiae Ctf18-RFC-PCNA-Pol-epsilon-DNA (2024)                                                    | [RCSB](https://www.rcsb.org/structure/8TWA)                |

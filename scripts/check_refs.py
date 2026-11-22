@@ -52,7 +52,7 @@ ID_RE = re.compile(r"`?((?:doi|pmid|pmcid|omim|nct|pdb|uniprot|url):[^\s`|]+)`?"
 CITE_PREFIX_RE = re.compile(r"^(F|C|G|M|P|T|N|R|O|S|CT|SIG|D|TOOL)\d+$")
 BRACKET_RE = re.compile(r"\[([^\[\]]+)\]")
 YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
-CITED_GLOBS = ("*.md", "examples/*.md", "evals/*.md", "scripts/README.md")
+CITED_GLOBS = ("*.md", "references/*.md", "examples/*.md", "evals/*.md", "scripts/README.md")
 
 # Hosts that are login- or bot-walled and legitimately answer 403 to scripts.
 # A 403 from these is reported OK with a warning instead of FAIL.
@@ -286,7 +286,7 @@ def check(entry: dict[str, str], strict: bool) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog="Exit status: 0 all OK, 1 any FAIL, 2 usage error.")
-    ap.add_argument("--file", default=str(Path(__file__).resolve().parent.parent / "references.md"))
+    ap.add_argument("--file", default=str(Path(__file__).resolve().parent.parent / "references" / "references.md"))
     ap.add_argument("--only", metavar="PREFIX", help="Ref prefix (C, CT, M...) or ID scheme (doi, pmid...)")
     ap.add_argument("--strict", action="store_true", help="year/first-author mismatches with the Citation cell FAIL instead of WARN")
     ap.add_argument("--json", action="store_true", help="emit a JSON array instead of text lines")

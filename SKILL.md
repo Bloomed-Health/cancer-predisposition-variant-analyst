@@ -65,37 +65,37 @@ any truncation variant in a multi-domain disease gene; a second worked example
    deficiency (MSI/IHC, CMMRD), other polyposis genes (MUTYH, NTHL1, MBD4 [P7][P8]).
    Fork on mutational signature: SBS10a/10b/28 = POLE exo; SBS10c/10d = POLD1;
    SBS14/20 = combined with MMR deficiency [M9][SIG6].
-   → [variant-interpretation.md#step-0-genotype-verification-and-differential-diagnosis](variant-interpretation.md#step-0-genotype-verification-and-differential-diagnosis)
+   → [references/variant-interpretation.md#step-0](references/variant-interpretation.md#step-0-genotype-verification-and-differential-diagnosis)
 
 1. **Characterize the variant** — Establish precise molecular consequence: reading
    frame, PTC position, predicted NMD fate [M12], downstream in-frame Met codons and
    Kozak context, protein domain map, gnomAD/ClinVar/LOVD status.
-   → [variant-interpretation.md#step-1-precise-molecular-consequence](variant-interpretation.md#step-1-precise-molecular-consequence),
-   [#step-2-protein-domain-map](variant-interpretation.md#step-2-protein-domain-map),
-   [#step-3-population-database-assessment](variant-interpretation.md#step-3-population-database-assessment)
+   → [references/variant-interpretation.md#step-1](references/variant-interpretation.md#step-1-precise-molecular-consequence),
+   [#step-2](references/variant-interpretation.md#step-2-protein-domain-map),
+   [#step-3](references/variant-interpretation.md#step-3-population-database-assessment)
 
 2. **Resolve the mechanistic paradox** — Run the essential-gene filter and the
    signature fork, then rank hypotheses (reinitiation first for early-exon PTCs)
    and pick the minimum experiment set that discriminates between them.
-   → [mechanistic-framework.md#pre-checks-essential-gene-filter-and-signature-fork](mechanistic-framework.md#pre-checks-essential-gene-filter-and-signature-fork),
-   [#hypothesis-ranking-table](mechanistic-framework.md#hypothesis-ranking-table),
-   [#minimum-discriminating-experiment-set](mechanistic-framework.md#minimum-discriminating-experiment-set)
+   → [references/mechanistic-framework.md#pre-checks](references/mechanistic-framework.md#pre-checks-essential-gene-filter-and-signature-fork),
+   [#hypothesis-ranking-table](references/mechanistic-framework.md#hypothesis-ranking-table),
+   [#minimum-discriminating-experiment-set](references/mechanistic-framework.md#minimum-discriminating-experiment-set)
 
 3. **Assemble clinical evidence** — Apply ACMG/ClinGen criteria with Bayesian
    points [C8]; PVS1 only where LoF is the established mechanism [C7]; PM2 at
    Supporting [C12]; PS3/BS3 graded per Brnich [C9]; calibrated PP3/BP4 [C10][C11].
-   → [variant-interpretation.md#step-4-acmgclingen-criteria-assembly](variant-interpretation.md#step-4-acmgclingen-criteria-assembly),
-   [#step-5-evidence-table-template](variant-interpretation.md#step-5-evidence-table-template)
+   → [references/variant-interpretation.md#step-4](references/variant-interpretation.md#step-4-acmgclingen-criteria-assembly),
+   [#step-5](references/variant-interpretation.md#step-5-evidence-table-template)
 
 4. **Synthesize literature** — Execute structured search protocol across PubMed,
    ClinVar submissions, gnomAD constraint data, and relevant preprint servers.
-   → [literature-protocol.md](literature-protocol.md)
+   → [references/literature-protocol.md](references/literature-protocol.md)
 
 5. **Map therapeutic targets** — Translate mechanism into actionable therapeutic
    hypotheses, stratified by evidence tier and regulatory pathway. Therapy follows
    the tumour's actual mutator (somatic EDM, MMRd, or reinitiated germline product),
    not the germline label.
-   → [therapeutic-mapping.md](therapeutic-mapping.md)
+   → [references/therapeutic-mapping.md](references/therapeutic-mapping.md)
 
 ---
 
@@ -124,21 +124,25 @@ any truncation variant in a multi-domain disease gene; a second worked example
 - Always give denominators with percentages (e.g. "66.7% (2/3)" [T1]).
 - Always state the `last_verified` date (2026-11-22) when citing 2024–2026
   literature, trial status, or database counts; these change.
-- Cite only reference IDs present in [references.md](references.md).
+- Cite only reference IDs present in [references/references.md](references/references.md).
 
 ---
 
 ## Sub-files
 
-| File                                                               | Content                                                                                      |
-| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| [variant-interpretation.md](variant-interpretation.md)             | Step 0 phenocopy exclusion, molecular consequence, domain map, gnomAD, ACMG/ClinGen with Bayesian points |
-| [mechanistic-framework.md](mechanistic-framework.md)               | Essential-gene filter, signature fork, ranked hypotheses, discriminating experiments, generalizable template |
-| [literature-protocol.md](literature-protocol.md)                   | Search strategy, evidence grading, gap analysis                                              |
-| [therapeutic-mapping.md](therapeutic-mapping.md)                   | Mechanism-to-target pipeline, clinical trial landscape, biomarker strategy                   |
-| [references.md](references.md)                                     | Canonical bibliography with URLs, organized by topic, citation guidance                      |
-| [quick-reference.md](quick-reference.md)                           | POLE/POLD1 variant class comparison, signature table, literature updates (2024–2026)         |
-| [examples/brca1-c68_69del.md](examples/brca1-c68_69del.md)         | Second worked example: BRCA1 185delAG, reinitiation to RING-less BRCA1, PARPi resistance      |
-| [evals/README.md](evals/README.md)                                 | Manual eval prompts with expected behaviours and failure modes                               |
-| [scripts/README.md](scripts/README.md)                             | Optional stdlib-only helpers: HGVS validation, gnomAD, ClinVar, reference link check        |
-| [CHANGELOG.md](CHANGELOG.md)                                       | Version history                                                                              |
+Layout follows the Agent Skills convention: `references/` holds the documents
+loaded on demand, `scripts/` the optional helpers, `examples/` and `evals/`
+supporting material.
+
+| File                                                                                   | Content                                                                                      |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [references/variant-interpretation.md](references/variant-interpretation.md)           | Step 0 phenocopy exclusion, molecular consequence, domain map, gnomAD, ACMG/ClinGen with Bayesian points |
+| [references/mechanistic-framework.md](references/mechanistic-framework.md)             | Essential-gene filter, signature fork, ranked hypotheses, discriminating experiments, generalizable template |
+| [references/literature-protocol.md](references/literature-protocol.md)                 | Search strategy, evidence grading, gap analysis                                              |
+| [references/therapeutic-mapping.md](references/therapeutic-mapping.md)                 | Mechanism-to-target pipeline, clinical trial landscape, biomarker strategy                   |
+| [references/references.md](references/references.md)                                  | Canonical bibliography with machine-checkable IDs, organized by topic, citation guidance     |
+| [references/quick-reference.md](references/quick-reference.md)                         | POLE/POLD1 variant class comparison, signature table, literature updates (2013–2026)         |
+| [examples/brca1-c68_69del.md](examples/brca1-c68_69del.md)                             | Second worked example: BRCA1 185delAG, reinitiation to RING-less BRCA1, PARPi resistance      |
+| [evals/README.md](evals/README.md)                                                     | Manual eval prompts with expected behaviours and failure modes                               |
+| [scripts/README.md](scripts/README.md)                                                 | Optional stdlib-only helpers: HGVS validation, gnomAD, ClinVar, PDB contacts, reference check |
+| [CHANGELOG.md](CHANGELOG.md)                                                           | Version history                                                                              |

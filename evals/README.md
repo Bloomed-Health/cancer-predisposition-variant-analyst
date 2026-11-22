@@ -150,7 +150,7 @@ PVS1 applies because LoF is the HBOC mechanism.
 - Every percentage has a denominator.
 - Every 2024–2026 citation, trial status or database count is accompanied by the
   last-verified date (2026-11-22).
-- Only reference IDs present in `references.md` are cited.
+- Only reference IDs present in `references/references.md` are cited.
 - POLE UniProt is Q07864; exonuclease domain aa 268–471; never P28340.
 - Canonical variant is always p.(Leu53Glnfs*5), PTC codon 57, exon 2 of 49; never p.Leu53Valfs*2 or "~aa 54".
 - gnomAD v4.1 is ~807,000 individuals (~1.6 M alleles), never "730,000 alleles".

@@ -151,27 +151,34 @@ impair fidelity:**
   Arg685, Gln689, Tyr726, Lys729) and the thumb (Glu1085, Ser1117) [M3]. All are
   retained in ΔN65-POLE. Earlier drafts of this skill placed the PIP contact at
   the N-terminus; that was wrong.
-- aa 1–30 are disordered (aa 1–23 invisible in cryo-EM) [M3, S5]; aa 25–47
-  form the first helix and aa 57–65 the first β-strand of the N-terminal
-  domain (NTD), which in B-family polymerases packs against the exonuclease
-  domain. Removing the first strand could destabilise the NTD fold -- yielding
-  either a degraded product (no phenotype) or a partially folded enzyme with
-  altered exo/pol coordination (a fidelity defect). Which of these occurs is
-  unknown; inspect residues 25–65 in PDB 9B8S [S1] / AlphaFold [S6] for
-  contacts with the exo domain before investing in wet-lab work.
-- Proofreading requires the primer to switch between the pol and exo sites
-  within the holoenzyme [M4, M5]; any perturbation of NTD–exo packing is a
-  candidate route to "replicates but proofreads poorly", the functional class
-  of classical EDM alleles.
+- aa 1–30 are disordered (aa 1–26 unmodelled in PDB 9B8S) [M3, S1, S5].
+- **Measured in 9B8S** (`python3 scripts/pdb_contacts.py 9B8S --chain A
+  --segment 25-65`, heavy atoms ≤4 Å, 2026-11-22): the first helix (Arg37–
+  Phe50) lies directly on the **exonuclease domain surface** -- 24 residue-pair
+  contacts with Gln352, Lys355, Thr357, Gln384–Gln390 and Pro400–Ile403,
+  including salt bridges/H-bonds Arg47–Glu386 (2.4 Å), Arg47–Gln352 (2.6 Å)
+  and Arg47–Lys355 (2.8 Å). The nearest exo catalytic residue (Asp368, Exo II)
+  is 15 Å from Phe48, so the helix is a peripheral brace, not part of the
+  active site. Residues 51–65 (loop + first β-strand) are buried in the NTD
+  core against Tyr84–Lys95 and Val240–Tyr248 (58 contacts), with Ile64/Asn65
+  also touching Pro269 and Cys402/Ile403 of the exo domain.
+- Consequence for ΔN65-POLE: it loses one of the structural elements that fixes
+  the NTD–exonuclease interface, plus the first strand of the NTD β-sheet. The
+  plausible outcomes are (i) misfolding/degradation (no phenotype), (ii) a
+  folded enzyme with a loosened exo-domain orientation. Proofreading requires
+  the primer to shuttle between pol and exo sites within the holoenzyme
+  [M4, M5]; a mis-oriented exo domain is a concrete, testable route to
+  "replicates but proofreads poorly" -- the functional class of EDM alleles.
 - This is the **only listed mechanism by which the mutant allele itself could
-  generate SBS10a/b**. It is also the one whose error-prone step is least
-  supported: NMD escape and a ΔN product are plausible; a fidelity defect from
-  losing aa 1–65 is a hypothesis with no structural or functional data yet.
+  generate SBS10a/b**. Its weakest link is now explicit: the structural contact
+  exists, but whether its loss changes exo activity has never been measured.
+  The right first experiment is biochemical -- purified ΔN65-POLE exonuclease
+  and fidelity assays alongside WT and D275A/E277A -- before any cell work.
 
 **Precedent:** BRCA1 c.68_69del (185delAG) places a PTC in exon 3; translation
 reinitiates at Met297 and yields a RING-less BRCA1 that is stable, partially
 functional, and clinically consequential (PARP-inhibitor/platinum resistance)
-[M8]. See [examples/brca1-c68_69del.md](examples/brca1-c68_69del.md).
+[M8]. See [examples/brca1-c68_69del.md](../examples/brca1-c68_69del.md).
 
 **Discriminating experiments:**
 
@@ -271,7 +278,7 @@ the peptide at high abundance with an identified interactor.
 | Rank | Hypothesis                                   | Prior             | Produces SBS10a/b from the mutant allele? | Key discriminator                                   | Change from v1.2                                          |
 | ---- | -------------------------------------------- | ----------------- | ----------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
 | 0    | H0 Coincidence / phenocopy                   | **HIGHEST**       | No (another driver does)                  | Tumour EDM hotspots, MMR IHC, signatures            | New; was absent                                           |
-| 1    | H1 Reinitiation / leaky scanning → ΔN65-POLE | MEDIUM            | **Yes** (only if loss of aa 1–65 impairs fidelity -- untested) | RNA allele ratio; C-term western/MS; ΔN65 reporter | New; replaces "53-aa neomorphic peptide"             |
+| 1    | H1 Reinitiation / leaky scanning → ΔN65-POLE | MEDIUM            | **Yes** -- if losing the Arg37–Phe50 helix that braces the exo domain (24 contacts in 9B8S) impairs proofreading; unmeasured | RNA allele ratio; C-term western/MS; purified ΔN65 exo/fidelity assay | New; replaces "53-aa neomorphic peptide" |
 | 2    | H3 Alternative splicing / transcript         | LOW               | Only if an in-frame product exists (none found) | RNA-seq junctions                               | New                                                       |
 | 3    | H2 Hypomorph + LOH of WT                     | Conditional on H1 | Yes, via H1 product                       | LOH at 12q24.33 **plus** mutant protein evidence    | Was rank 1 as "haploinsufficiency + LOH"; inviable for a null |
 | 4    | H4 Pol δ compensation                        | Additive          | No (SBS10c/d)                             | SBS10c/d fraction                                   | Signature attribution corrected (SBS28 ≠ Pol δ)           |
@@ -281,11 +288,13 @@ the peptide at high abundance with an identified interactor.
 **What changed and why:** v1.2 ranked "haploinsufficiency + somatic LOH" first by
 analogy to POLD1 L474P. That analogy fails for a null allele in an essential
 gene [M10]. v1.2 also placed a CMG-binding surface in aa 1–50; the CMG interface
-is C-terminal [M2, M7]. The structural data [M3–M5] do not sharpen the paradox;
-they bound it: the PCNA interface (aa 684–1187) and the replisome interface
-(C-terminal half) are both outside aa 1–65, so the only way this allele can
-matter mechanistically is through a ΔN product whose N-terminal-domain fold is
-perturbed -- a testable, currently unsupported hypothesis -- or not at all (H0).
+is C-terminal [M2, M7]. The structural data [M3–M5] bound the paradox rather
+than sharpen it: the PCNA interface (aa 684–1187) and the replisome interface
+(C-terminal half) are both outside aa 1–65. What aa 1–65 do contain, measured
+in 9B8S, is a helix (Arg37–Phe50) packed against the exonuclease domain and
+the first strand of the NTD β-sheet. So the allele can matter mechanistically
+only through a ΔN product with a perturbed NTD–exo interface -- a specific,
+testable, still unmeasured hypothesis -- or not at all (H0).
 
 ---
 
@@ -307,8 +316,10 @@ Ordered by information per unit cost. Steps 1–2 use existing tumour tissue;
 4. **Western blot with a C-terminal POLE antibody ± targeted MS** on patient
    fibroblasts/LCLs. Direct test of H1. Proceed regardless of step 3 result,
    since reinitiation can stabilise the transcript.
-5. **Functional assay of ΔN65-POLE** (reporter mutation rate, PCNA co-IP,
-   organoid mutation accumulation). Required before any PS3 claim; grade per
+5. **Biochemistry and function of ΔN65-POLE.** Purified ΔN65 exonuclease and
+   fidelity assays versus WT and D275A/E277A first (cheapest, most direct test
+   of the NTD–exo hypothesis); then reporter mutation rate in cells and
+   organoid mutation accumulation. Required before any PS3 claim; grade per
    [C9] with validated controls (WT, P286R, exo-dead D275A/E277A).
 
 > **Decision tree.** Step 1 shows a somatic EDM hotspot or step 2 shows MMR loss
@@ -338,9 +349,11 @@ canonical Y-loss phenotype:
 4. Isoform / exon-skip check: exon length mod 3; alternative transcripts and
    promoters (Ensembl).
 5. NMD probability (rule-based + NMDetective [M12, TOOL6]).
-6. Map retained sequence to interaction surfaces (UniProt [S5], PDB, AlphaFold
-   [S6], STRING/BioGRID). Verify the interface location against primary
-   structural papers, not reviews.
+6. Map retained and lost sequence to structure: UniProt [S5] features, then a
+   contact census on the best experimental model
+   (`scripts/pdb_contacts.py <PDB> --chain X --segment N-M --regions ...`),
+   AlphaFold [S6] for unmodelled parts, STRING/BioGRID for partners. Verify
+   interface locations against primary structural papers, not reviews.
 7. Biomarker fork: if the phenotype has a molecular readout (mutational
    signature, metabolite, IHC), ask which allele/protein could produce it.
 8. Rank: coincidence vs reinitiation/ΔN product vs isoform bypass vs

@@ -78,7 +78,7 @@ treating a POLE truncation as causal.
 > Heterozygous POLE LoF carriers: ~0.20% of controls (~1/500) [P6].
 > Somatic POLE EDM: ~1–2% of CRC.
 > Expected co-occurrence in CRC: 1/500 × 1/50–1/100 ≈ 1 in 25,000–50,000 CRC
-> patients. With >1.9 million CRC diagnoses per year worldwide, dozens of
+> patients. With ~1.9 million CRC diagnoses per year worldwide [P9], dozens of
 > patients per year are expected to carry an incidental germline POLE LoF
 > allele AND a somatic hypermutator. Observing one such patient is not
 > evidence for a novel mechanism.
@@ -199,8 +199,11 @@ POLE (Q07864, 2,286 aa) — approximate boundaries:
 **Key N-terminal features (aa 1–~270, the catalytic N-terminal domain) [M3, S5]:**
 
 - aa 1–30: disordered (aa 1–23 invisible in the human Pol ε–PCNA cryo-EM map)
-- aa 25–47: first α-helix; aa 57–65: first β-strand of the NTD β-sheet. The
-  NTD packs against the exonuclease domain in B-family polymerases.
+- aa 25–47: first α-helix; aa 57–65: first β-strand of the NTD β-sheet. In
+  PDB 9B8S the helix (Arg37–Phe50) packs directly on the exonuclease domain
+  (24 heavy-atom contacts with Gln352–Thr357, Gln384–Gln390, Pro400–Ile403;
+  Arg47–Glu386 salt bridge; 15 Å from Exo II Asp368), and aa 51–65 are buried
+  in the NTD core (`scripts/pdb_contacts.py 9B8S --chain A --segment 25-65`).
 - **The PCNA interface is NOT in this region.** The three PCNA contacts are the
   P-domain (His684–Lys729), the thumb (Glu1085, Ser1117) and the PIP-motif at
   aa 1180–1187 [M3]; a ΔN65 product retains all of them.
