@@ -13,7 +13,8 @@ Gene mode:
 
 Variant IDs are gnomAD style chrom-pos-ref-alt (VCF-normalized, left-anchored base included);
 take them from VariantValidator's `vcf` block or `hgvs_validate.py`.
-Exit status: 0 success (including "variant absent"), 1 not found/invalid, 2 network error.
+Exit status: 0 success (including "variant absent"), 1 not found/invalid, 2 network error
+(argparse usage errors also exit 2).
 """
 from __future__ import annotations
 
@@ -22,9 +23,9 @@ import json
 import re
 import sys
 import urllib.error
-import urllib.request
 
-USER_AGENT = "cancer-predisposition-variant-analyst/2.0 (gnomad_lookup.py; +https://github.com)"
+from _http import request
+
 TIMEOUT_S = 30
 API = "https://gnomad.broadinstitute.org/api"
 VARIANT_RE = re.compile(r"^(chr)?([0-9]{1,2}|X|Y|M|MT)-(\d+)-([ACGTN]+)-([ACGTN]+)$", re.I)
@@ -68,15 +69,17 @@ class ApiError(Exception):
 
 def graphql(query: str, variables: dict) -> dict:
     payload = json.dumps({"query": query, "variables": variables}).encode()
-    req = urllib.request.Request(API, data=payload, method="POST",
-                                 headers={"User-Agent": USER_AGENT, "Content-Type": "application/json", "Accept": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        resp = request(API, method="POST", data=payload, timeout=TIMEOUT_S,
+                       headers={"Content-Type": "application/json", "Accept": "application/json"})
     except urllib.error.HTTPError as e:
         raise ApiError(f"HTTP {e.code} from gnomAD API: {e.read().decode('utf-8', 'replace')[:300]}")
     except (urllib.error.URLError, TimeoutError) as e:
         raise ApiError(f"network error contacting gnomAD API: {e}")
+    try:
+        return json.loads(resp.text())
+    except json.JSONDecodeError as e:
+        raise ApiError(f"gnomAD API returned non-JSON: {e}")
 
 
 def normalize_variant_id(v: str) -> str:

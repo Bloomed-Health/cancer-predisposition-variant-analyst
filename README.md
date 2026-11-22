@@ -16,7 +16,7 @@ That discipline -- and the reasoning framework around it -- is what this skill e
 | `literature-protocol.md` | Structured search strategy, evidence grading, gap analysis template |
 | `therapeutic-mapping.md` | ICI, ATR inhibitors, nucleoside analogs, neoantigen vaccines, biomarker strategy |
 | `quick-reference.md` | POLE/POLD1 variant class comparison, mutational signature table, 2024–2026 literature updates |
-| `references.md` | Stable reference IDs (F1, M1, T2, etc.) used across all files; see that file for the current count |
+| `references.md` | Stable reference IDs (F1, M1, T2, etc.) used across all files; every row carries a machine-checkable ID |
 | `examples/brca1-c68_69del.md` | Second worked example: BRCA1 185delAG, reinitiation to RING-less BRCA1, PARPi resistance |
 | `evals/README.md` | Manual eval prompts with expected behaviours and failure modes |
 | `scripts/` | Optional stdlib-only Python helpers (HGVS validation, gnomAD, ClinVar, reference link check) |
@@ -50,7 +50,7 @@ Claude Code auto-discovers skills in `~/.claude/skills/`.
 
 ### As part of agent-skills
 
-This skill is also available as a submodule in [DROOdotFOO/agent-skills](https://github.com/DROOdotFOO/agent-skills), which bundles 53 skills. If you want the full set:
+This skill is also available as a submodule in [DROOdotFOO/agent-skills](https://github.com/DROOdotFOO/agent-skills), which bundles many skills. If you want the full set:
 
 ```bash
 npx skills@latest add DROOdotFOO/agent-skills
@@ -58,7 +58,7 @@ npx skills@latest add DROOdotFOO/agent-skills
 
 ## How it loads
 
-Skills are lazy. Claude Code reads the short trigger clause from `SKILL.md` (a few lines) at session start. The heavy content -- the mechanistic frameworks, reference tables, and therapeutic mapping -- only loads when your conversation matches the trigger.
+Skills are lazy. Claude Code reads the short trigger clause from `SKILL.md` (a ~1 kB trigger clause) at session start. The heavy content -- the mechanistic frameworks, reference tables, and therapeutic mapping -- only loads when your conversation matches the trigger.
 
 The trigger fires when you present a genotype-phenotype paradox, ask about POLE/POLD1 truncation variants in cancer predisposition, need to resolve mechanistic contradictions in multi-domain disease genes, or ask about early-exon truncations where translation reinitiation could yield an N-terminally truncated protein. It stays quiet for routine panel interpretation with no genotype-phenotype conflict, pharmacogenomics, or common variants.
 
@@ -78,7 +78,7 @@ The reference IDs (like [M1], [T2], [C2]) that appear in Claude's responses trac
 
 ## Maintenance
 
-- Run `python3 scripts/check_refs.py` to check that every reference URL in `references.md` still resolves and that every `[ID]` cited in the skill files exists.
+- Run `python3 scripts/check_refs.py` to check that every reference ID in `references.md` still resolves (DOI/PMID/OMIM/NCT/PDB/UniProt/URL), that every table row carries one, and that every `[ID]` cited in the skill files is defined there; add `--strict` to fail on year/first-author mismatches with the Citation column.
 - When you re-verify the literature, update `last_verified` in the `SKILL.md` frontmatter and the "verified as of" date above.
 - Add a `CHANGELOG.md` entry for every content change (Keep a Changelog format).
 - The helper scripts in `scripts/` are optional; the skill works without them. They are stdlib-only Python 3.10+ but need network access (Ensembl, gnomAD, ClinVar, publisher URLs).

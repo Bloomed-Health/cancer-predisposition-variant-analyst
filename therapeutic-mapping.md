@@ -60,12 +60,12 @@ per se.
 | Source                              | Population                                    | Result                                                                                                        |
 | ----------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | KEYNOTE-158 [CT3]                   | TMB-H (≥10 mut/Mb) solid tumours              | Basis of 2020 FDA tumour-agnostic pembrolizumab approval                                                      |
-| Toripalimab Phase II [T1]           | Non-MSI-H solid tumours, any POLE/POLD1 variant | ORR 21.4% overall; **EDM 66.7% (2/3)**; non-EDM 9.1%                                                        |
+| Toripalimab Phase II [T1]           | Non-MSI-H solid tumours, any POLE/POLD1 variant; 14 evaluable | ORR 21.4% (3/14); **EDM 66.7% (2/3)**; non-EDM 9.1% (1/11)                                                  |
 | LOP stratification [T2]             | 41 POLE-mutant mCRC (MDACC); 69,223 pan-cancer | LOP = 148/1,965 POLE-mutant tumours (7.5%). LOP ORR **88.9% (8/9)**; non-LOP MSI-H 66.7% (6/9); non-LOP MSS ≈ WT. LOP tumours respond poorly to cytotoxic chemotherapy |
-| POLE/POLD1pd mCRC [T3]              | Proofreading-deficient mCRC on ICI            | Exceptional response rates; confirms proofreading status as the selector                                      |
-| MD Anderson retrospective [T5]      | POLE-mutant tumours on ICI                    | Pathogenic POLE: PFS 15.1 mo, OS 29.5 mo; benign POLE: PFS 2.8 mo, OS 11.6 mo                                 |
+| POLE/POLD1pd mCRC [T3]              | 27 proofreading-deficient mCRC vs 610 dMMR/MSI-H mCRC on ICI | ORR 89% vs 54% (P = 0.01); PFS HR 0.24 (95% CI 0.08-0.74); response tracked the intensity of the POLE/D1pd signature |
+| MD Anderson retrospective [T5]      | 82 POLE-mutant tumours on ICI (of 458 POLE-mutant in 14,229 NGS reports; 15.0% pathogenic, 15.9% benign, 69.1% VUS) | Pathogenic vs benign POLE: CBR 82.4% vs 30.0%; PFS 15.1 vs 2.2 mo; OS 29.5 vs 6.8 mo |
 | MSS POLE mCRC case [T4]             | n = 1                                         | Complete pathologic response to pembrolizumab, 37 months disease-free                                         |
-| Neoadjuvant ICI [T6]                | MSI-H/POLE-mutated locally advanced CRC       | R0 100%, pCR 70% (see [T6] for n)                                                                             |
+| Neoadjuvant ICI [T6]                | 22 MSI-H or POLE-mutated bulky LACRC (retrospective); **only 2/22 POLE-mutated** | R0 20/20, pCR 14/20 in the resected cohort; the two POLE patients achieved pCR and cCR respectively. Evidence for POLE specifically is n = 2 |
 | Neoantigen quality [N1, N2]         | CRC model; melanoma/NSCLC cohorts             | Clonal neoantigen burden predicts response better than TMB (+11-20% AUROC)                                    |
 
 **Interpretation for a germline truncation carrier:**
@@ -238,9 +238,10 @@ catalogued in POLE-hypermutator TCGA data; TIL/TCR-T against POLE neoantigens.
   not supported); check MHC-I binding [TOOL7] before any investment.
 - Therapeutic logic then follows PPAP: ICI by tumour TMB/LOP status; CTNA and
   ATRi hypotheses apply to the tumour's ΔN-POLE-dependent replication.
-- Research target: the ΔN-POLE–PCNA interface. If weakened PCNA engagement is
-  the mechanism, it is a structural handle for understanding proofreading
-  switching [M3-M5], not a near-term drug target.
+- Research target: NTD stability and NTD–exonuclease packing in ΔN65-POLE
+  (residues 25–65 removed). If a fidelity defect is confirmed, it is a
+  structural handle for understanding pol/exo switching [M3-M5], not a
+  near-term drug target. The PCNA interface (aa 684–1187) is intact.
 
 ### If H0 (coincidence) is confirmed
 

@@ -4,7 +4,7 @@ description: |
   Ultra-rare disease variant interpretation: mechanistic paradox resolution, clinical
   classification, literature synthesis, and therapeutic target mapping.
   TRIGGER when: user presents a genotype-phenotype paradox (variant that should not
-  cause the observed phenotype by current consensus), asks about POLE/POLD1 truncation
+  cause the observed phenotype), asks about POLE/POLD1 truncation
   variants in cancer predisposition, needs to resolve mechanistic contradictions in
   multi-domain disease genes where truncation outside the canonical disease region
   produces the expected phenotype, asks about early-exon truncations where translation
@@ -12,7 +12,7 @@ description: |
   report for an ultra-rare variant that challenges established classification frameworks.
   DO NOT TRIGGER when: user needs routine panel interpretation with no
   genotype-phenotype conflict, routine ACMG classification without a paradox element,
-  pharmacogenomics (PGx) interpretation, common population variant annotation, or
+  pharmacogenomics interpretation, common population variant annotation, or
   somatic-only tumor profiling without a germline predisposition question.
 metadata:
   author: Bloomed-Health

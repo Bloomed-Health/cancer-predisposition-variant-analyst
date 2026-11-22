@@ -14,7 +14,11 @@ Variant mode:
 
 Counts are ClinVar aggregate germline classifications per Variation ID (not per submission).
 Set NCBI_API_KEY (or --api-key) to raise the E-utilities rate limit from 3 to 10 requests/s.
-Exit status: 0 success (including "no records"), 1 invalid input, 2 network/API error.
+Exit status: 0 success (including "no records"), 1 invalid input, 2 network/API error
+(argparse usage errors also exit 2).
+--significance values P/LP, VUS, B/LB, Conflicting match the collapsed bucket exactly; any other
+value is a case-insensitive substring of the ClinVar description, so `pathogenic` also keeps
+"Likely pathogenic" and "Conflicting classifications of pathogenicity" -- use P/LP for P+LP only.
 """
 from __future__ import annotations
 
@@ -23,14 +27,13 @@ import json
 import os
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
-import urllib.request
 import xml.etree.ElementTree as ET
 from collections import Counter
 
-USER_AGENT = "cancer-predisposition-variant-analyst/2.0 (clinvar_lookup.py; +https://github.com)"
+from _http import request
+
 TIMEOUT_S = 30
 EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 TOOL = "cancer-predisposition-variant-analyst"
@@ -71,7 +74,6 @@ class Eutils:
     def __init__(self, api_key: str | None):
         self.api_key = api_key
         self.min_interval = 0.11 if api_key else 0.34
-        self._last = 0.0
 
     def call(self, endpoint: str, params: dict, post: bool = False, raw: bool = False):
         params = {**params, "db": "clinvar", "tool": TOOL}
@@ -79,34 +81,22 @@ class Eutils:
             params["retmode"] = "json"
         if self.api_key:
             params["api_key"] = self.api_key
-        wait = self.min_interval - (time.monotonic() - self._last)
-        if wait > 0:
-            time.sleep(wait)
         body = urllib.parse.urlencode(params).encode()
         url = f"{EUTILS}/{endpoint}.fcgi"
-        req = urllib.request.Request(url, data=body if post else None, headers={"User-Agent": USER_AGENT},
-                                     method="POST" if post else "GET")
-        if not post:
-            req.full_url = f"{url}?{body.decode()}"
-        for attempt in range(3):
-            try:
-                with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
-                    self._last = time.monotonic()
-                    text = resp.read().decode("utf-8")
-                    if raw:
-                        return text
-                    data = json.loads(text)
-                    break
-            except urllib.error.HTTPError as e:
-                if e.code in (429, 500, 502, 503) and attempt < 2:
-                    time.sleep(1.5 * (attempt + 1))
-                    continue
-                raise ApiError(f"HTTP {e.code} from {endpoint}: {e.read().decode('utf-8', 'replace')[:200]}")
-            except (urllib.error.URLError, TimeoutError) as e:
-                if attempt < 2:
-                    time.sleep(1.5)
-                    continue
-                raise ApiError(f"network error contacting {endpoint}: {e}")
+        try:
+            resp = request(url if post else f"{url}?{body.decode()}", method="POST" if post else "GET",
+                           data=body if post else None, timeout=TIMEOUT_S, min_interval=self.min_interval)
+        except urllib.error.HTTPError as e:
+            raise ApiError(f"HTTP {e.code} from {endpoint}: {e.read().decode('utf-8', 'replace')[:200]}")
+        except (urllib.error.URLError, TimeoutError) as e:
+            raise ApiError(f"network error contacting {endpoint}: {e}")
+        text = resp.text()
+        if raw:
+            return text
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise ApiError(f"{endpoint} returned non-JSON: {e}")
         if "error" in data and not data.get("result") and not data.get("esearchresult"):
             raise ApiError(f"{endpoint}: {data['error']}")
         return data
@@ -185,11 +175,21 @@ def bucket(desc: str) -> str:
     return "Other"
 
 
+BUCKET_NAMES = {name.lower(): name for name, _ in BUCKETS}
+
+
+def significance_matches(germline: str, wanted: str) -> bool:
+    """Bucket names (P/LP, VUS, B/LB, Conflicting) match the collapsed bucket exactly; anything else is a substring."""
+    w = wanted.lower()
+    if w in BUCKET_NAMES:
+        return bucket(germline) == BUCKET_NAMES[w]
+    return w in germline.lower()
+
+
 def significance_filter(rows: list[dict], wanted: list[str]) -> list[dict]:
     if not wanted:
         return rows
-    w = [x.lower() for x in wanted]
-    return [r for r in rows if any(x in r["germline"].lower() or x == bucket(r["germline"]).lower() for x in w)]
+    return [r for r in rows if any(significance_matches(r["germline"], x) for x in wanted)]
 
 
 def condition_filter(rows: list[dict], wanted: list[str]) -> list[dict]:
@@ -284,8 +284,9 @@ def run_variant(eu: Eutils, args) -> tuple[int, dict]:
 
     def run(label: str, term: str) -> int:
         s = eu.search(term)
-        log.append({"strategy": label, "query": s["query_translation"], "count": s["count"]})
-        for r in (eu.summaries(s, limit=args.limit) if s["count"] else []):
+        rows = eu.summaries(s, limit=args.limit) if s["count"] else []
+        log.append({"strategy": label, "query": s["query_translation"], "count": s["count"], "fetched": len(rows)})
+        for r in rows:
             row = classification(r)
             row["matched_by"] = label
             found.setdefault(row["variation_id"], row)
@@ -306,7 +307,9 @@ def run_variant(eu: Eutils, args) -> tuple[int, dict]:
         return 0, result
     print(f"ClinVar  variant {args.variant}")
     for entry in log:
-        print(f"  search [{entry['strategy']}] {entry['query']} -> {entry['count']} record(s)")
+        more = entry["count"] - entry["fetched"]
+        print(f"  search [{entry['strategy']}] {entry['query']} -> {entry['count']} record(s)"
+              + (f" ({more} more not shown; raise --limit)" if more > 0 else ""))
     if not found:
         print("  ABSENT: no ClinVar record for this HGVS" + (" or position" if args.position else ""))
         return 0, result
@@ -336,7 +339,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--variant", help="transcript HGVS, e.g. 'NM_006231.4:c.158_159del' (variant mode)")
     ap.add_argument("--type", default="truncating", help=f"gene mode: comma list of {', '.join(TYPE_TERMS)} (default truncating)")
     ap.add_argument("--significance", action="append", default=[],
-                    help="gene mode: keep only classifications containing this text or bucket (P/LP, VUS, B/LB, Conflicting); repeatable")
+                    help="gene mode: keep records whose classification matches; P/LP, VUS, B/LB, Conflicting match the collapsed "
+                         "bucket exactly, any other value is a substring (so 'pathogenic' also keeps Likely pathogenic and "
+                         "Conflicting ... of pathogenicity); repeatable")
     ap.add_argument("--condition", action="append", default=[],
                     help="gene mode: keep only records whose condition names contain this text (e.g. polyposis); repeatable")
     ap.add_argument("--submitters", action="store_true", help="gene mode: also tally submitter x classification at SCV level (one efetch per 100 records)")

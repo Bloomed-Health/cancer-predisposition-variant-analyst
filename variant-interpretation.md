@@ -147,9 +147,13 @@ ENST00000320574):
 | Met359 | strong (ACCATCATGG) | 302 codons        | ΔN358-POLE: truncated exo domain                    |
 
 The relevant candidate is **Met66**: only 9 codons past the PTC, adequate
-context, and the resulting ΔN65-POLE would lack only the disordered N-terminal
-23 residues plus ~40 aa of the catalytic NTD [M3] while keeping exonuclease,
-polymerase and the C-terminal replisome-interaction half intact.
+context, and reachable by leaky scanning as well (AUG1 is in a weak context,
+GGCTCC**ATG**T, after a 27-nt 5′ UTR). The resulting ΔN65-POLE would lack the
+disordered N-terminus (aa 1–30), the first helix (aa 25–47) and the first
+β-strand (aa 57–65) of the N-terminal domain [M3, S5] while keeping the
+exonuclease, polymerase, all three PCNA contacts (P-domain, thumb, PIP-motif
+1180–1187) and the C-terminal replisome-interaction half intact. Whether the
+NTD folds without its first strand is unknown (see mechanistic-framework.md H1).
 
 **Precedent [M8]:** BRCA1 c.68_69del (185delAG) places a PTC in exon 3, yet
 translation reinitiates at Met297 and produces a RING-less BRCA1 protein that
@@ -181,11 +185,10 @@ interaction — a testable hypothesis handled in mechanistic-framework.md.
 ```
 POLE (Q07864, 2,286 aa) — approximate boundaries:
 
-  1   23    57         268       471  ~520        ~1180   ~1300                 2286
-  |---|------|-----------|---------|----|-----------|-------|----------------------|
-   dis  catalytic NTD    exonuclease    polymerase      C-terminal non-catalytic half
-        (aa 1–~270: PIP,  (268–471)      (~520–1180)     (zinc fingers; POLE2/GINS/CMG
-         P-domain, thumb -> PCNA)                         interface) [M2, M7]
+  1   30    57  65      268       471  ~520   684-729  1085-1117 1180-1187 ~1300            2286
+  |----|-----|--|--------|---------|----|------|--------|---------|--------|-----------------|
+   dis   NTD (helix 25-47, strand 57-65 ...)  exo      polymerase (P-domain, thumb, PIP     C-terminal non-catalytic
+                                              268-471   -> three-point PCNA interface [M3])  half: POLE2/GINS/CMG [M2, M7]
           ^
       PTC codon 57 (this patient)
       Eliminates: everything from aa 57 onward, including exo and pol
@@ -193,12 +196,14 @@ POLE (Q07864, 2,286 aa) — approximate boundaries:
                   functional. Full-length product only if reinitiation (Step 1)
 ```
 
-**Key N-terminal features (aa 1–~270, the catalytic NTD) [M3]:**
+**Key N-terminal features (aa 1–~270, the catalytic N-terminal domain) [M3, S5]:**
 
-- aa 1–23: disordered in the human Pol ε–PCNA structure
-- PIP-motif, P-domain and thumb together form the three-point PCNA interface
-  that lies within the catalytic NTD; this is the processivity-clamp contact,
-  not a replisome-assembly contact
+- aa 1–30: disordered (aa 1–23 invisible in the human Pol ε–PCNA cryo-EM map)
+- aa 25–47: first α-helix; aa 57–65: first β-strand of the NTD β-sheet. The
+  NTD packs against the exonuclease domain in B-family polymerases.
+- **The PCNA interface is NOT in this region.** The three PCNA contacts are the
+  P-domain (His684–Lys729), the thumb (Glu1085, Ser1117) and the PIP-motif at
+  aa 1180–1187 [M3]; a ΔN65 product retains all of them.
 - Exonuclease domain aa 268–471 (Castillejo 2023 boundaries [C1]); all PPAP
   EDM hotspots lie here
 - Polymerase domain approx. aa 520–1180
@@ -375,17 +380,28 @@ positive controls (e.g. P286R, V411L) and WT.
 
 **Worked case (c.158_159del, POLE–PPAP):**
 
-| Scenario                                      | Tally                              | Points | Result |
-| --------------------------------------------- | ---------------------------------- | ------ | ------ |
-| Baseline (Step 0 gate passed)                 | PM2_Supp (1) + PP4_Supp (1)        | 2      | **VUS** |
-| + confirmed de novo                           | + PS2 (4)                          | 6      | Likely Pathogenic *only if* a gene–disease assertion exists for which PS2/PP4 are valid. For POLE–PPAP, PP4 and PS2 are being scored against a phenotype whose established mechanism this allele cannot produce; the correct output remains **VUS** |
-| + BP5 (≥2 hypermutated tumours lacking SBS10/28/14) | 2 − 1                        | 1      | VUS (trending benign for a proofreading mechanism) |
-| + PS3_Moderate from calibrated fidelity assay | 2 + 2 (+4 if de novo)              | 4–8    | Still requires the new gene–disease entity to be curated first [C13] |
+| Scenario                                            | Tally                              | Points | Arithmetic result | Recommended output |
+| --------------------------------------------------- | ---------------------------------- | ------ | ----------------- | ------------------ |
+| Baseline (Step 0 gate passed)                       | PM2_Supp (1) + PP4_Supp (1)        | 2      | VUS               | **VUS**            |
+| + confirmed de novo                                 | + PS2 (4)                          | 6      | Likely Pathogenic | **VUS** (see below) |
+| + BP5 (≥2 hypermutated tumours lacking SBS10/28/14) | 2 − 1                              | 1      | VUS               | VUS, trending benign for a proofreading mechanism |
+| + PS3_Moderate from calibrated fidelity assay       | 2 + 2 (+4 if de novo)              | 4–8    | VUS / LP          | LP only after the gene–disease entity is curated [C13] |
+
+**Why the de novo row is reported as VUS although the arithmetic says LP.** The
+points system [C8] presumes that the variant belongs to a class with an
+established relationship to the disease (that prior is built into the
+framework); PS2 and PP4 are then weighed against that prior. For a POLE
+truncation and PPAP that premise fails: the established mechanism is one this
+allele cannot execute unless Step 1 demonstrates a protein product. A ClinGen
+curator would therefore hold the variant at VUS pending PS3, exactly as the SVI
+PVS1 flowchart declines to apply PVS1 when LoF is not the mechanism [C7]. State
+this explicitly in the report, show the arithmetic, and do not present LP as an
+available "committee option" without the functional data.
 
 **Bottom line:** for POLE–PPAP the output for this variant is **VUS**. Likely
-Pathogenic is not reachable without either (a) a validated gene–disease entity
-in which truncation is the mechanism, or (b) PS3 from a calibrated fidelity
-assay of a demonstrated protein product.
+Pathogenic becomes defensible only with (a) PS3 from a calibrated fidelity assay
+of a demonstrated protein product (H1), or (b) a separately curated gene–disease
+entity in which truncation is the mechanism [C13].
 
 ### Loss-of-Proofreading (LOP) Classification (JITC 2025) [T2]
 
@@ -423,9 +439,10 @@ somatic event, not the germline truncation, drives ICI eligibility.
 **Step 0 gate:** [passed / failed — state which item failed]
 **Classification:** VUS (POLE–PPAP)
 **Why not LP:** LoF is not the established PPAP mechanism (PVS1 not applied [C7]);
-PM2 is Supporting only [C1, C12]; PP4/PS2 cannot be scored as PPAP-specific for an
-allele that cannot produce the PPAP mechanism; no validated gene–disease entity for
-truncation-associated hypermutation [C13].
+PM2 is Supporting only [C1, C12]; the points framework presumes a variant class with
+an established disease relationship, which a POLE truncation lacks for PPAP, so PS2/PP4
+points are shown but do not lift the call above VUS without PS3; no validated
+gene–disease entity for truncation-associated hypermutation [C13].
 
 | ACMG Code | Evidence                                                         | Strength (points)             |
 | --------- | ---------------------------------------------------------------- | ----------------------------- |
@@ -436,7 +453,7 @@ truncation-associated hypermutation [C13].
 | [PS2]     | [Parental testing pending]                                       | [Strong (4), if confirmed]    |
 | [PS3/BS3] | [Calibrated fidelity assay, OddsPath = …]                        | [per Brnich 2020]             |
 
-**Points tally:** [sum] -> [VUS 0–5 / LP 6–9 / P ≥10]
+**Points tally:** [sum] -> arithmetic class [VUS 0–5 / LP 6–9 / P ≥10]; reported class: VUS unless PS3 ≥ Moderate or a curated entity exists
 
 **Unresolved:**
 - NMD fate and reinitiation product (ΔN65-POLE via Met66) not yet tested

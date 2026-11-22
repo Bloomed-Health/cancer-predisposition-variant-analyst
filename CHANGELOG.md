@@ -30,12 +30,38 @@ All notable changes to this skill are documented here. Format follows
 - Reference re-attributions: F2 Church 2013 is Hum Mol Genet (somatic EDM in endometrial
   cancer), F4 is Spier 2015 (germline POLE spectrum; "Weren 2015" is NTHL1 → P8), F8 is
   Roberts 2022 AJMG-A; C7/C8 are Hum Mutat. Every reference row now carries a
-  machine-checkable DOI/PMID/NCT/PDB/UniProt ID (101/101 resolve).
+  machine-checkable ID that resolves (DOI/PMID/OMIM/NCT/PDB/UniProt/URL; 101/101).
+- `scripts/hgvs_validate.py`: in-frame indels were reported as frameshifts ending at the native
+  stop (CFTR p.Phe508del printed as `p.(Phe508Glyfs*973)`, "65.7% lost"); the native-stop test is
+  now frame-aware, in-frame indels are reported as `p.(Phe508del)` / in-frame indel and are not
+  truncating, and stop-loss variants are reported as `ext` (TP53 `p.(Ter394Argext*9)`).
+- `scripts/hgvs_validate.py`: NMD escape within 55 nt of the last junction no longer requires the
+  PTC to sit in the penultimate exon; "first strong Kozak: MetNone" prints `none`; PTCs at
+  150 < c. <= 200 nt are flagged `borderline start-proximal` (POLE c.169).
+- `scripts/clinvar_lookup.py`: `--significance P/LP|VUS|B/LB|Conflicting` matches the collapsed
+  bucket exactly (substring matching kept for other values and documented); variant-mode searches
+  print "N more not shown" when `--limit` truncates them.
+- Retry-After parsing no longer crashes on HTTP-date headers; gnomAD calls retry 429/5xx and
+  network errors like the other scripts.
 - FILS/IMAGe-I described as biallelic *hypomorphic* POLE (not biallelic null), consistent with
   essentiality.
 - ClinVar reality: POLE truncating records are mostly single-lab "Pathogenic" with condition
   "not provided" or conflicting; none is concordant P/LP for PPAP. Earlier wording ("usually
   VUS or absent") replaced with the measured distribution and a condition-field warning.
+- Round-2 review: the Pol ε–PCNA interface was placed in the N-terminal domain; per He 2024 the
+  three contacts are the P-domain (His684–Lys729), thumb (Glu1085/Ser1117) and PIP-motif
+  (aa 1180–1187). aa 1–65 contain a disordered tail (1–30), one helix (25–47) and the first
+  β-strand (57–65) of the N-terminal domain and no PCNA or CMG contact. H1 (ΔN65-POLE) now rests
+  on possible NTD destabilisation, is explicitly labelled untested, and notes leaky scanning past
+  the weak-context AUG1 (27-nt 5′ UTR) as a second route to Met66.
+- Round-2 review: evidence table denominators corrected from abstracts: T1 ORR 21.4% = 3/14,
+  non-EDM 9.1% = 1/11; T3 = 27 POLE/POLD1pd vs 610 dMMR mCRC, ORR 89% vs 54%; T5 (Garmezy 2022)
+  n = 82 on ICI, benign PFS 2.2 mo / OS 6.8 mo (previously 2.8 / 11.6); T6 cohort is 22 patients
+  of whom only 2 POLE-mutated; M1 "~8 vs >141 mut/Mb" replaced with the abstract's ">100 mut/Mb".
+- Round-2 review: first authors corrected (C1 Mur, C5 Bergquist, M1 Andrianova, M5 Wang, P1
+  Folletet, P2 Viana-Errasti, T1 Jin); `check_refs.py --strict` now catches this class of error.
+- Bayesian-points worked case shows the arithmetic class (LP at 6 points with PS2) separately from
+  the recommended output (VUS pending PS3) and explains why.
 
 ### Added
 
@@ -51,8 +77,16 @@ All notable changes to this skill are documented here. Format follows
 - Second worked example: `examples/brca1-c68_69del.md`.
 - Manual evals: `evals/README.md`.
 - Stdlib-only helper scripts: `scripts/hgvs_validate.py`, `scripts/gnomad_lookup.py`,
-  `scripts/clinvar_lookup.py`, `scripts/check_refs.py`.
-- CI workflow checking reference links (`.github/workflows/check-refs.yml`).
+  `scripts/clinvar_lookup.py`, `scripts/check_refs.py`; shared `scripts/_http.py` (retry,
+  back-off, Retry-After, per-host spacing, one User-Agent).
+- `scripts/check_refs.py`: `[ID]` citation check across the skill's markdown, table-row/entry
+  count assertion, `--strict` year/first-author comparison against the Citation column (WARN by
+  default), clean error for an unreadable `--file`, exit codes in `--help`.
+- Offline unit tests: `scripts/tests/test_hgvs_validate.py`
+  (`python3 -m unittest discover -s scripts/tests`).
+- CI workflow (`.github/workflows/check-refs.yml`): least-privilege permissions, push on `main`,
+  `workflow_dispatch` input `only`, Python 3.10 + 3.12 matrix, offline `unit-tests` job,
+  FAIL/WARN lines echoed in the log.
 - Guardrails section in `SKILL.md`; `last_verified` metadata field.
 - New reference IDs C7–C13, M8–M12, P7–P8, T9, SIG6.
 - G1 (NCCN colorectal high-risk guideline), S7 (BRCA1 UniProt), CT2/CT4/CT5 verified trials

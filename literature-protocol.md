@@ -255,7 +255,7 @@ Notes: [any analogous exon-2 submissions; conditions cited]
 
 Date: YYYY-MM-DD
 Database: gnomAD v4.1
-Tool/API: scripts/gnomad_lookup.py --variant 12-132681183-...
+Tool/API: scripts/gnomad_lookup.py --variant 12-132681182-TCA-T
 Results: AC/AN (exomes, genomes), non-cancer subset
 Notes: [PM2_Supporting applies if ≤1/200,000 alleles per [C1]]
 ```

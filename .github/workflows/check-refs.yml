@@ -1,23 +1,63 @@
 name: check-refs
 
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
-      - "references.md"
-      - "scripts/check_refs.py"
+      - "**.md"
+      - "scripts/**"
       - ".github/workflows/check-refs.yml"
   schedule:
     - cron: "0 6 * * 1" # weekly, Monday 06:00 UTC
   workflow_dispatch:
+    inputs:
+      only:
+        description: "Restrict check_refs.py to a Ref prefix (C, CT, M...) or ID scheme (doi, pmid...); empty = all"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
 
 jobs:
-  check-refs:
+  unit-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Resolve every reference ID
-        run: python3 scripts/check_refs.py
+          python-version: ${{ matrix.python-version }}
+      - name: Offline unit tests (hgvs_validate)
+        run: python3 -m unittest discover -s scripts/tests -v
+
+  check-refs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Resolve every reference ID and cited [ID]
+        run: |
+          set -o pipefail
+          only="${{ github.event.inputs.only }}"
+          python3 scripts/check_refs.py ${only:+--only "$only"} | tee check_refs.log
+      - name: Show FAIL/WARN lines
+        if: always()
+        run: |
+          echo "::group::FAIL/WARN lines"
+          grep -E '^(FAIL|WARN) ' check_refs.log || echo "none"
+          echo "::endgroup::"
+          if grep -q '^FAIL ' check_refs.log; then
+            grep '^FAIL ' check_refs.log | sed 's/^/::error::/'
+          fi

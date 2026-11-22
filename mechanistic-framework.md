@@ -38,8 +38,9 @@ Ask: is the gene cell-essential? Check DepMap common-essential status [M10].
   allele) is viable **only if the germline allele is hypomorphic** -- it must
   still produce a protein that replicates DNA. A true null allele plus LOH of
   the wild-type allele is a dead cell, not a hypermutated tumour.
-- The POLD1 L474P precedent [M1] (heterozygous: ~8 mut/Mb; after somatic loss
-  of WT: >141 mut/Mb) works precisely because L474P is a proofreading-dead but
+- The POLD1 L474P precedent [M1] (heterozygous normal cells: only a subtle
+  increase in mutation burden; tumours with somatic inactivation of the WT
+  allele: >100 mut/Mb, SBS10d) works precisely because L474P is a proofreading-dead but
   replication-competent hypomorph. It is not a precedent for a null allele.
 - Consequence for p.(Leu53Glnfs\*5): "haploinsufficiency + LOH" is inviable
   **unless** the allele produces a protein (see H1). Rank accordingly.
@@ -115,10 +116,11 @@ B/LB if ClinVar/PolED evidence supports); therapy follows the somatic mechanism.
 ### H1: Translation reinitiation → ΔN-POLE (leading true-paradox mechanism)
 
 **Hypothesis:** The frameshift transcript escapes NMD (partially or fully) and
-ribosomes reinitiate at a downstream in-frame AUG, producing an N-terminally
+ribosomes initiate at a downstream in-frame AUG -- by reinitiation after the
+56-codon ORF, or by leaky scanning past AUG1 -- producing an N-terminally
 truncated but otherwise full-length POLE that retains the exonuclease domain
-(aa 268–471), the polymerase domain, and the C-terminal CMG-binding half -- but
-lacks part of the N-terminal PCNA interface.
+(aa 268–471), the polymerase domain, the PCNA interface, and the C-terminal
+CMG-binding half, but lacks the first ~65 residues of the N-terminal domain.
 
 **Sequence basis (computed on ENST00000320574 CDS):**
 
@@ -130,22 +132,41 @@ lacks part of the N-terminal PCNA interface.
 | Met299       | 242                | TCCTAC**ATG**A    | weak     |
 | **Met359**   | 302                | ACCATC**ATG**G    | strong   |
 
-Reinitiation efficiency is highest when the terminated uORF is short and the
-next AUG is close; Met66 (9 codons downstream, adequate context) is the prime
-candidate. The product, ΔN65-POLE, lacks aa 1–65.
+Two routes lead to Met66. (i) Reinitiation after termination at codon 57: most
+efficient after short uORFs; a 56-codon ORF is at the long end of what still
+permits measurable reinitiation, so efficiency is uncertain. (ii) Leaky
+scanning: the annotated 5′ UTR of ENST00000320574 is only 27 nt and AUG1 sits
+in a weak Kozak context (GGCTCC**ATG**T: −3 = C, +4 = T), both of which favour
+scanning past AUG1 to the next adequate AUG -- Met66 -- on the mutant *and* the
+wild-type transcript. If ΔN65-POLE is made physiologically from the WT allele,
+its existence is not pathogenic per se; H1 then requires that the mutant allele
+shifts the balance so that ΔN65-POLE replicates a meaningful fraction of the
+genome. Measure both transcripts' products, not just the mutant's.
 
-**Why the ΔN product could be error-prone rather than simply functional:**
+**What aa 1–65 actually contain, and why removing them might (or might not)
+impair fidelity:**
 
-- The POLE N-terminal 23 residues are disordered, and the PIP-motif, P-domain
-  and thumb form a three-point interface with all three PCNA protomers [M3].
-  Deleting the N-terminal segment removes or destabilises the PIP contact.
-- Proofreading requires an intact Pol ε–PCNA holoenzyme that switches the
-  primer between pol and exo sites [M4, M5]. A weakened PCNA interface is a
-  plausible route to reduced proofreading with retained synthesis -- the same
-  functional class (replicates, cannot proofread) as classical EDM alleles.
-- This is therefore the **only listed mechanism by which the mutant allele
-  itself could generate SBS10a/b**, and it reduces the "paradox" to classical
-  PPAP biology from a non-ED allele.
+- The PCNA interface is **not** here. In the human Pol ε–PCNA structure the
+  three contacts are the PIP-motif at aa 1180–1187, the P-domain (His684,
+  Arg685, Gln689, Tyr726, Lys729) and the thumb (Glu1085, Ser1117) [M3]. All are
+  retained in ΔN65-POLE. Earlier drafts of this skill placed the PIP contact at
+  the N-terminus; that was wrong.
+- aa 1–30 are disordered (aa 1–23 invisible in cryo-EM) [M3, S5]; aa 25–47
+  form the first helix and aa 57–65 the first β-strand of the N-terminal
+  domain (NTD), which in B-family polymerases packs against the exonuclease
+  domain. Removing the first strand could destabilise the NTD fold -- yielding
+  either a degraded product (no phenotype) or a partially folded enzyme with
+  altered exo/pol coordination (a fidelity defect). Which of these occurs is
+  unknown; inspect residues 25–65 in PDB 9B8S [S1] / AlphaFold [S6] for
+  contacts with the exo domain before investing in wet-lab work.
+- Proofreading requires the primer to switch between the pol and exo sites
+  within the holoenzyme [M4, M5]; any perturbation of NTD–exo packing is a
+  candidate route to "replicates but proofreads poorly", the functional class
+  of classical EDM alleles.
+- This is the **only listed mechanism by which the mutant allele itself could
+  generate SBS10a/b**. It is also the one whose error-prone step is least
+  supported: NMD escape and a ΔN product are plausible; a fidelity defect from
+  losing aa 1–65 is a hypothesis with no structural or functional data yet.
 
 **Precedent:** BRCA1 c.68_69del (185delAG) places a PTC in exon 3; translation
 reinitiates at Met297 and yields a RING-less BRCA1 that is stable, partially
@@ -235,12 +256,13 @@ residues before the stop). Earlier versions of this skill proposed that it
 competes for CMG binding. That premise is wrong: the CMG/GINS interface of POLE
 is in the **C-terminal** non-catalytic half (zinc-finger region → POLE2 →
 Psf1/MCM5; thumb of the inactive polymerase domain → MCM2/Cdc45) [M2, M7].
-Nothing in aa 1–65 contacts CMG. The only N-terminal partner is PCNA via a
-largely disordered region [M3]; a free 56-aa peptide competing for PCNA pockets
-would, if anything, cause broad replication stress, not the POLE-specific SBS10
-signature. A 6-kDa fragment from a transcript that is also NMD-targeted is
-unlikely to reach competitive concentration. Discard unless proteomics
-unexpectedly detects the peptide at high abundance.
+Nothing in aa 1–65 contacts CMG, and nothing in aa 1–65 contacts PCNA either
+(the three PCNA contacts lie at aa 684–1187 [M3]). The fragment comprises a
+disordered tail, one helix and one β-strand of the NTD, with no known binding
+partner. A 6-kDa peptide from a transcript that is also NMD-targeted has no
+mechanism by which to poison replication, let alone to generate the
+POLE-specific SBS10 signature. Discard unless proteomics unexpectedly detects
+the peptide at high abundance with an identified interactor.
 
 ---
 
@@ -249,7 +271,7 @@ unexpectedly detects the peptide at high abundance.
 | Rank | Hypothesis                                   | Prior             | Produces SBS10a/b from the mutant allele? | Key discriminator                                   | Change from v1.2                                          |
 | ---- | -------------------------------------------- | ----------------- | ----------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
 | 0    | H0 Coincidence / phenocopy                   | **HIGHEST**       | No (another driver does)                  | Tumour EDM hotspots, MMR IHC, signatures            | New; was absent                                           |
-| 1    | H1 Reinitiation → ΔN-POLE                    | MEDIUM            | **Yes** (if PCNA interface impaired)      | RNA allele ratio; C-term western/MS; ΔN65 reporter  | New; replaces "53-aa neomorphic peptide"                  |
+| 1    | H1 Reinitiation / leaky scanning → ΔN65-POLE | MEDIUM            | **Yes** (only if loss of aa 1–65 impairs fidelity -- untested) | RNA allele ratio; C-term western/MS; ΔN65 reporter | New; replaces "53-aa neomorphic peptide"             |
 | 2    | H3 Alternative splicing / transcript         | LOW               | Only if an in-frame product exists (none found) | RNA-seq junctions                               | New                                                       |
 | 3    | H2 Hypomorph + LOH of WT                     | Conditional on H1 | Yes, via H1 product                       | LOH at 12q24.33 **plus** mutant protein evidence    | Was rank 1 as "haploinsufficiency + LOH"; inviable for a null |
 | 4    | H4 Pol δ compensation                        | Additive          | No (SBS10c/d)                             | SBS10c/d fraction                                   | Signature attribution corrected (SBS28 ≠ Pol δ)           |
@@ -259,10 +281,11 @@ unexpectedly detects the peptide at high abundance.
 **What changed and why:** v1.2 ranked "haploinsufficiency + somatic LOH" first by
 analogy to POLD1 L474P. That analogy fails for a null allele in an essential
 gene [M10]. v1.2 also placed a CMG-binding surface in aa 1–50; the CMG interface
-is C-terminal [M2, M7]. The structural data that v1.2 cited to sharpen the
-paradox [M3–M5] actually point to the resolution: an N-terminally truncated
-POLE that assembles but engages PCNA imperfectly is the mechanistically
-coherent way for this allele to behave like an EDM allele.
+is C-terminal [M2, M7]. The structural data [M3–M5] do not sharpen the paradox;
+they bound it: the PCNA interface (aa 684–1187) and the replisome interface
+(C-terminal half) are both outside aa 1–65, so the only way this allele can
+matter mechanistically is through a ΔN product whose N-terminal-domain fold is
+perturbed -- a testable, currently unsupported hypothesis -- or not at all (H0).
 
 ---
 

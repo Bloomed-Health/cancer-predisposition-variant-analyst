@@ -12,7 +12,8 @@ Pipeline (network, stdlib only):
 Usage:
   python3 scripts/hgvs_validate.py 'NM_006231.4:c.158_159del'
   python3 scripts/hgvs_validate.py 'NM_007294.4:c.68_69del' --json
-Exit status: 0 success, 1 variant rejected/not found, 2 network or data error.
+Exit status: 0 success, 1 variant rejected/not found, 2 network or data error
+(argparse usage errors also exit 2).
 """
 from __future__ import annotations
 
@@ -20,17 +21,17 @@ import argparse
 import json
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
-import urllib.request
 
-USER_AGENT = "cancer-predisposition-variant-analyst/2.0 (hgvs_validate.py; +https://github.com)"
+from _http import request
+
 TIMEOUT_S = 30
 VV_BASE = "https://rest.variantvalidator.org/VariantValidator/variantvalidator"
 ENSEMBL_BASE = {"GRCh38": "https://rest.ensembl.org", "GRCh37": "https://grch37.rest.ensembl.org"}
 NMD_JUNCTION_NT = 55        # PTC > 50-55 nt upstream of the last junction -> NMD
 START_PROXIMAL_NT = 150     # PTC within the first ~150 nt of CDS often escapes NMD (reinitiation)
+START_BORDERLINE_NT = 200   # 150 < PTC <= 200 nt: borderline for the start-proximal effect
 LONG_EXON_NT = 400          # PTC in a long exon reduces NMD efficiency (Lindeboom 2016/2019)
 
 CODON_TABLE = {
@@ -54,26 +55,18 @@ class LookupError_(Exception):
     """Raised for network failures or unusable payloads (exit 2)."""
 
 
-def http_get(url: str, accept: str = "application/json", retries: int = 2):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept})
-    for attempt in range(retries + 1):
-        try:
-            with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
-                body = resp.read().decode("utf-8")
-                return json.loads(body) if accept == "application/json" else body
-        except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < retries:
-                time.sleep(float(e.headers.get("Retry-After", "2")))
-                continue
-            if e.code == 404:
-                return None
-            raise LookupError_(f"HTTP {e.code} from {url}: {e.read().decode('utf-8', 'replace')[:200]}")
-        except (urllib.error.URLError, TimeoutError) as e:
-            if attempt < retries:
-                time.sleep(1.5)
-                continue
-            raise LookupError_(f"network error for {url}: {e}")
-    return None
+def http_get(url: str, accept: str = "application/json", retries: int = 3):
+    """GET with retry/back-off; None on 404; LookupError_ on any other failure."""
+    try:
+        resp = request(url, headers={"Accept": accept}, timeout=TIMEOUT_S, retries=retries)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return None
+        raise LookupError_(f"HTTP {e.code} from {url}: {e.read().decode('utf-8', 'replace')[:200]}")
+    except (urllib.error.URLError, TimeoutError) as e:
+        raise LookupError_(f"network error for {url}: {e}")
+    body = resp.text()
+    return json.loads(body) if accept == "application/json" else body
 
 
 # ---------------------------------------------------------------- VariantValidator
@@ -245,6 +238,72 @@ def ptc_from_protein_hgvs(p: str | None) -> dict | None:
     return None
 
 
+def _aa3(seq: str) -> str:
+    return "".join(AA3.get(a, "Xaa") for a in seq)
+
+
+def _res(prot: str, i: int) -> str:
+    """Residue label, e.g. Phe508 (1-based codon i)."""
+    return f"{AA3.get(prot[i - 1], 'Xaa')}{i}"
+
+
+def protein_consequence(wt_prot: str, mut_prot: str, delta_nt: int) -> dict:
+    """Compare the wild-type translation (ending in '*') with the mutant read-through translation.
+
+    ``delta_nt`` is the CDS length change (mutant - wild type). Returns the derived protein HGVS,
+    a consequence label, the computed PTC codon (None when the product ends at the native stop
+    or is a C-terminal extension) and the first altered codon.
+    """
+    stop = mut_prot.find("*")
+    ptc = stop + 1 if stop >= 0 else None
+    inframe = delta_nt % 3 == 0
+    native_stop = len(wt_prot) + delta_nt // 3 if inframe else None   # codon of the native stop in the mutant
+    fd = next((i for i, (a, b) in enumerate(zip(wt_prot, mut_prot)) if a != b), None)
+    out = {"first_altered": None if fd is None else fd + 1, "ptc_codon": ptc}
+    if fd is None:
+        out.update(protein_hgvs="p.(=)" if ptc == native_stop else "p.?", consequence="synonymous" if ptc == native_stop else "unknown")
+        out["ptc_codon"] = None
+        return out
+    if ptc is None:
+        out.update(protein_hgvs=f"p.({_res(wt_prot, fd + 1)}{AA3.get(mut_prot[fd], 'Xaa')}fs*?) [no stop found]", consequence="frameshift")
+        return out
+    if inframe and delta_nt == 0 and ptc == native_stop and wt_prot[fd + 1:] == mut_prot[fd + 1:ptc]:
+        out.update(protein_hgvs=f"p.({_res(wt_prot, fd + 1)}{AA3[mut_prot[fd]]})", consequence="missense", ptc_codon=None)
+        return out
+    if mut_prot[fd] == "*" and not (inframe and delta_nt != 0 and ptc == native_stop):
+        out.update(protein_hgvs=f"p.({_res(wt_prot, fd + 1)}Ter)", consequence="nonsense")
+        return out
+    if inframe and fd == len(wt_prot) - 1:
+        out.update(protein_hgvs=f"p.(Ter{fd + 1}{AA3.get(mut_prot[fd], 'Xaa')}ext*{ptc - fd - 1})",
+                   consequence="stop-loss (extension)", ptc_codon=None)
+        return out
+    if not inframe:
+        out.update(protein_hgvs=f"p.({_res(wt_prot, fd + 1)}{AA3.get(mut_prot[fd], 'Xaa')}fs*{ptc - fd})", consequence="frameshift")
+        return out
+    # in-frame indel: align prefix (fd) and suffix, describe the differing span
+    mut_t = mut_prot[:ptc]
+    s = 0
+    while s < min(len(wt_prot), len(mut_t)) - fd and wt_prot[-1 - s] == mut_t[-1 - s]:
+        s += 1
+    deleted, inserted = wt_prot[fd:len(wt_prot) - s], mut_t[fd:len(mut_t) - s]
+    a, b = fd + 1, fd + len(deleted)
+    if deleted and not inserted:
+        desc = f"{_res(wt_prot, a)}del" if a == b else f"{_res(wt_prot, a)}_{_res(wt_prot, b)}del"
+    elif inserted and not deleted:
+        n = len(inserted)
+        if fd >= n and wt_prot[fd - n:fd] == inserted:
+            desc = f"{_res(wt_prot, fd)}dup" if n == 1 else f"{_res(wt_prot, fd - n + 1)}_{_res(wt_prot, fd)}dup"
+        else:
+            desc = f"{_res(wt_prot, fd)}_{_res(wt_prot, fd + 1)}ins{_aa3(inserted)}"
+    else:
+        desc = f"{_res(wt_prot, a)}delins{_aa3(inserted)}" if a == b else f"{_res(wt_prot, a)}_{_res(wt_prot, b)}delins{_aa3(inserted)}"
+    truncated = ptc < native_stop
+    kind = "in-frame indel" if delta_nt else "in-frame delins"
+    out.update(protein_hgvs=f"p.({desc})", consequence=f"{kind} (premature stop)" if truncated else kind,
+               ptc_codon=ptc if truncated else None)
+    return out
+
+
 # ---------------------------------------------------------------- annotation
 def exon_for_c(exons: list[dict], c: int) -> dict | None:
     return next((ex for ex in exons if ex["c_start"] <= c <= ex["c_end"]), None)
@@ -309,24 +368,10 @@ def annotate(vv: dict, model: dict, max_met: int) -> dict:
             out["notes"].extend(notes)
             # read through into the 3' UTR so frameshifts that pass the native stop still terminate
             mut_read = mut_cds + model["cdna"][model["cds_tx_end"]:]
-            mut_prot = translate(mut_read)
-            wt_prot = model["protein"]
-            stop = mut_prot.find("*")
-            ptc_calc = stop + 1 if stop >= 0 else None
-            first_diff = next((i for i, (a, b) in enumerate(zip(wt_prot, mut_prot)) if a != b), None)
-            if first_diff is None:
-                derived_p = "p.(=)" if ptc_calc == len(wt_prot) else "p.?"
-            elif ptc_calc is None:
-                derived_p = f"p.({AA3[wt_prot[first_diff]]}{first_diff + 1}{AA3.get(mut_prot[first_diff], 'Xaa')}fs*?) [no stop found]"
-            elif mut_prot[first_diff] == "*":
-                derived_p = f"p.({AA3[wt_prot[first_diff]]}{first_diff + 1}Ter)"
-            elif len(mut_cds) == len(model["cds"]) and ptc_calc == len(wt_prot):
-                derived_p = f"p.({AA3[wt_prot[first_diff]]}{first_diff + 1}{AA3[mut_prot[first_diff]]})"
-            else:
-                derived_p = f"p.({AA3[wt_prot[first_diff]]}{first_diff + 1}{AA3[mut_prot[first_diff]]}fs*{ptc_calc - first_diff})"
-            out["first_altered_codon_computed"] = (first_diff + 1) if first_diff is not None else None
-            if ptc_calc == len(wt_prot) and len(mut_cds) == len(model["cds"]):
-                ptc_calc = None  # terminates at the native stop: no PTC
+            pc = protein_consequence(model["protein"], translate(mut_read), len(mut_cds) - len(model["cds"]))
+            derived_p, ptc_calc = pc["protein_hgvs"], pc["ptc_codon"]
+            out["consequence_computed"] = pc["consequence"]
+            out["first_altered_codon_computed"] = pc["first_altered"]
         except ValueError as e:
             out["notes"].append(f"re-translation failed: {e}")
     out["ptc_codon_from_protein_hgvs"] = ptc_hgvs
@@ -354,13 +399,15 @@ def annotate(vv: dict, model: dict, max_met: int) -> dict:
         pred, reason = "NMD escape predicted", "single-exon transcript"
     elif ptc_exon == n_exons:
         pred, reason = "NMD escape predicted", "PTC in the last exon"
-    elif ptc_exon == n_exons - 1 and dist is not None and dist <= NMD_JUNCTION_NT:
+    elif dist is not None and dist <= NMD_JUNCTION_NT:
         pred, reason = "NMD escape predicted", f"PTC {dist} nt upstream of the last exon-exon junction (<= {NMD_JUNCTION_NT} nt)"
     else:
         pred, reason = "NMD predicted", f"PTC {dist} nt upstream of the last exon-exon junction (> {NMD_JUNCTION_NT} nt)"
     flags = []
     if ptc_c_first <= START_PROXIMAL_NT:
         flags.append(f"start-proximal PTC (c.{ptc_c_first} <= {START_PROXIMAL_NT} nt): NMD often inefficient; reinitiation downstream possible")
+    elif ptc_c_first <= START_BORDERLINE_NT:
+        flags.append(f"borderline start-proximal PTC (c.{ptc_c_first}; {START_PROXIMAL_NT} < c. <= {START_BORDERLINE_NT} nt): reduced NMD efficiency and downstream reinitiation remain possible")
     if ptc_ex and ptc_ex["length"] > LONG_EXON_NT:
         flags.append(f"PTC in a long exon ({ptc_ex['length']} nt > {LONG_EXON_NT}): reduced NMD efficiency")
     out["nmd"] = {
@@ -401,7 +448,7 @@ def print_report(res: dict) -> None:
     rng = a.get("variant_exon_c_range")
     print(f"Variant exon:         {ve} of {a['total_exons']}" + (f"  (exon spans c.{rng[0]}-c.{rng[1]})" if rng else "")
           + (f"; VariantValidator exon {a['variant_exon_variantvalidator']}" if a.get("variant_exon_variantvalidator") else ""))
-    print(f"Protein HGVS (calc):  {a.get('protein_hgvs_computed')}")
+    print(f"Protein HGVS (calc):  {a.get('protein_hgvs_computed')}" + (f"  [{a['consequence_computed']}]" if a.get("consequence_computed") else ""))
     print(f"PTC codon:            parsed={a.get('ptc_codon_from_protein_hgvs')}  computed={a.get('ptc_codon_computed')}")
     if a.get("is_truncating"):
         t, n = a["truncation"], a["nmd"]
@@ -411,7 +458,8 @@ def print_report(res: dict) -> None:
         for f in n["efficiency_flags"]:
             print(f"                      flag: {f}")
         r = a["reinitiation"]
-        print(f"Reinitiation scan:    {r['n_inframe_atg_downstream']} in-frame ATG downstream of PTC; first strong Kozak: Met{r['first_strong_met']}")
+        first_strong = f"Met{r['first_strong_met']}" if r["first_strong_met"] else "none"
+        print(f"Reinitiation scan:    {r['n_inframe_atg_downstream']} in-frame ATG downstream of PTC; first strong Kozak: {first_strong}")
         print("  Met     +codons  context(-6..+4)  -3  +4  Kozak     product_aa  retained")
         for h in r["candidates"]:
             print(f"  Met{h['met_codon']:<5} {h['codons_past_ptc']:>7}  {h['context']:<15} {h['minus3']:>2}  {h['plus4']:>2}  {h['kozak']:<9} {h['product_aa']:>10}  {pct(h['fraction_retained'])}")
