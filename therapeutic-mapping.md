@@ -8,309 +8,286 @@ tags: therapeutics,immunotherapy,checkpoint-inhibitor,TMB,PPAP,POLE,mismatch-rep
 # Therapeutic Mapping
 
 Translate variant mechanism into actionable therapeutic hypotheses. Organized
-from mechanism outward: established therapies first, then emerging targets
-arising specifically from this variant's unresolved mechanism.
+from mechanism outward: established therapies first, then investigational
+classes, then hypotheses specific to the resolved mechanism.
 
 This is a research planning tool, not clinical guidance. All therapeutic
 hypotheses require validation before patient application.
+
+**Prerequisite:** the mechanism must be resolved first. Therapy follows the
+**tumour's** actual mechanism, which Step 0 and the signature fork establish --
+not the germline allele's label.
 
 ---
 
 ## Framework: Mechanism → Target → Therapeutic → Evidence Tier
 
 ```
-POLE variant mechanism
+Resolved mechanism (Step 0 / mechanistic-framework.md)
     ↓
-Downstream molecular consequence (ultra-hypermutation, neoantigen load, etc.)
+Downstream molecular consequence (proofreading-deficient Pol ε? MMR loss? neither?)
     ↓
-Therapeutic vulnerability (immune recognition, replication stress, etc.)
+Therapeutic vulnerability (neoantigen load, replication stress, CTNA excision failure)
     ↓
 Drug / intervention class
     ↓
-Evidence tier (established → investigational → hypothesis)
+Evidence tier (established → investigational → hypothesis), with n
 ```
+
+### Routing by resolved mechanism
+
+| Resolved mechanism                                              | Therapeutic logic                                                                                                              |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| H0: somatic POLE/POLD1 EDM on the WT allele                     | Treat as somatic proofreading-deficient tumour (TMB-H / LOP pathway). The germline LoF allele carries no therapeutic implication. |
+| H0: MMR deficiency (Lynch, CMMRD, sporadic)                     | dMMR/MSI-H pathway (ICI approvals for dMMR). Germline MMR workup drives surveillance, not the POLE allele.                      |
+| H0: other hypermutator (MUTYH, MBD4, NTHL1)                     | Follow that syndrome's management; POLE allele incidental.                                                                      |
+| H1 confirmed: ΔN-POLE with impaired proofreading                | Behaves as PPAP: TMB-H ICI logic, LOP-class reasoning [T2], CTNA hypothesis [R3, R4]. Surveillance as POLE/POLD1 carrier.      |
+| Unresolved (Step 0 negative, H1 untested)                       | Tumour-level biomarkers (TMB, MSI, signatures) still drive oncologic therapy; germline implications remain VUS-level.           |
 
 ---
 
-## Tier 1: Established Therapeutic Relevance (Act Now)
+## Tier 1: Established Therapeutic Relevance
 
 ### Immune Checkpoint Inhibition (ICI)
 
-**Mechanism link:**
-Ultra-hypermutated tumors (TMB >100 mut/Mb) generate an exceptionally high
-neoantigen load. Frameshifted peptides (from frameshift mutations caused by
-POLE proofreading failure) are highly immunogenic due to their complete
-foreignness to the host immune system.
+**Mechanism link:** Ultra-hypermutated tumours (TMB >100 mut/Mb) generate high
+neoantigen loads; frameshift-derived peptides are strongly immunogenic.
+Response tracks **proofreading loss in the tumour**, not POLE gene mutation
+per se.
 
-**Established evidence:**
+**Evidence (with denominators):**
 
-- FDA approval: pembrolizumab for TMB-High (>=10 mut/Mb) solid tumors (2020)
-- POLE/POLD1 hypermutated tumors show exceptional ICI response rates: 50-100%
-  in retrospective series for ultra-hypermutated POLE EDM tumors
-- Ultra-hypermutated (>100 mut/Mb) outperforms merely TMB-high in ICI response
-- **Toripalimab Phase II [T1]:** EDM 66.7% ORR vs non-EDM 9.1%. Critical
-  for truncation variants -- non-EDM rate is the conservative comparator.
-- **MSS/POLE CRC complete response [T4]:** MSS TMB-H POLE-mutated mCRC,
-  complete pathologic response to pembrolizumab, 37 months disease-free.
-- **Neoantigen quality [N1]:** Clonal neoantigen crucial for ICI response --
-  quality (clonality, immunogenicity) matters more than raw count.
-- **NeoPrecis [N2]:** Clonality-aware prediction, +11-20% AUROC over TMB.
-- **LOP stratification [T2]:** Only 7.5% of POLE mutations are LOP. LOP:
-  82.4% CBR, poor chemo response. Non-LOP: identical to WT.
-- **Neoadjuvant ICI [T6]:** POLE-mutated bulky CRC: R0 100%, pCR 70%.
-- **Nivolumab in POLEpd [T3]:** 38% ORR, 58% DCR. No activity for
-  proofreading-neutral mutations.
+| Source                              | Population                                    | Result                                                                                                        |
+| ----------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| KEYNOTE-158 [CT3]                   | TMB-H (≥10 mut/Mb) solid tumours              | Basis of 2020 FDA tumour-agnostic pembrolizumab approval                                                      |
+| Toripalimab Phase II [T1]           | Non-MSI-H solid tumours, any POLE/POLD1 variant | ORR 21.4% overall; **EDM 66.7% (2/3)**; non-EDM 9.1%                                                        |
+| LOP stratification [T2]             | 41 POLE-mutant mCRC (MDACC); 69,223 pan-cancer | LOP = 148/1,965 POLE-mutant tumours (7.5%). LOP ORR **88.9% (8/9)**; non-LOP MSI-H 66.7% (6/9); non-LOP MSS ≈ WT. LOP tumours respond poorly to cytotoxic chemotherapy |
+| POLE/POLD1pd mCRC [T3]              | Proofreading-deficient mCRC on ICI            | Exceptional response rates; confirms proofreading status as the selector                                      |
+| MD Anderson retrospective [T5]      | POLE-mutant tumours on ICI                    | Pathogenic POLE: PFS 15.1 mo, OS 29.5 mo; benign POLE: PFS 2.8 mo, OS 11.6 mo                                 |
+| MSS POLE mCRC case [T4]             | n = 1                                         | Complete pathologic response to pembrolizumab, 37 months disease-free                                         |
+| Neoadjuvant ICI [T6]                | MSI-H/POLE-mutated locally advanced CRC       | R0 100%, pCR 70% (see [T6] for n)                                                                             |
+| Neoantigen quality [N1, N2]         | CRC model; melanoma/NSCLC cohorts             | Clonal neoantigen burden predicts response better than TMB (+11-20% AUROC)                                    |
 
-**Biomarker strategy for this patient:**
+**Interpretation for a germline truncation carrier:**
 
-- TMB quantification: already >100 mut/Mb ✓
-- MSI status: assess by IHC (MLH1/MSH2/MSH6/PMS2) and PCR/NGS — POLE hypermutators
-  are typically MSS (microsatellite stable), not MSI-H; ICI response in POLE
-  hypermutators is TMB-driven, not MMR-driven, but MSI-H would add evidence
-- PD-L1 IHC: not required for TMB-H approval but informs combination strategy
-- HLA typing: broad HLA diversity predicts neoantigen presentation
+- The germline allele is non-LOP by definition (no protein). ICI eligibility
+  therefore rests on **tumour** TMB (≥10 mut/Mb pathway), tumour MSI status, and
+  whatever proofreading-deficient allele the tumour actually carries.
+- If Step 0 found a somatic EDM hotspot: the tumour is LOP; expect EDM-class
+  response. If H1 is confirmed: treat the ΔN allele as LOP-class pending data.
+- The toripalimab EDM figure is 2 of 3 patients. Do not quote it as a
+  response rate without n.
 
-**Clinical trial landscape** (see references.md CT1-CT4):
+**Biomarker strategy:**
 
-- CT1, CT2, CT3 (POLE/POLD1 ICI cohort, TMB-H umbrella, KEYNOTE-158)
-- Check ClinicalTrials.gov: "POLE hypermutation" filter for current accruing trials
+- TMB quantification (panel or WES; report assay and cutoff).
+- MSI status by IHC (MLH1/MSH2/MSH6/PMS2) and PCR/NGS. POLE hypermutators are
+  typically MSS; MSI-H points to an MMR driver (Step 0).
+- Mutational signatures (SBS10a/b/28 vs SBS10c/d vs SBS14/20).
+- PD-L1 IHC: not required for TMB-H approval; informs combinations.
+- HLA typing and clonal neoantigen scoring [N2] where available.
 
-**Key caveats:**
+**Clinical trials:** registry entries change; query at run time:
+`https://clinicaltrials.gov/api/v2/studies?query.term=POLE+AND+(immunotherapy+OR+pembrolizumab+OR+nivolumab)`.
+Verified entries (CT.gov API, 2026-11-22) are in [references.md](references.md):
+CT1 NCT05103969 (POLE/POLD1-mutant tumour cohort; status UNKNOWN), CT2
+NCT03810339 (toripalimab, POLE/POLD1-mutant non-MSI-H; the [T1] trial;
+RECRUITING), CT3 NCT02628067 (KEYNOTE-158; basis of the TMB-H approval), CT4
+NCT03639714 (personalised neoantigen vaccine + nivolumab/ipilimumab;
+COMPLETED), CT5 NCT03435107 (durvalumab in dMMR/POLE mCRC; COMPLETED).
 
-1. **Germline vs. somatic:** Most ICI data is from somatic POLE hypermutators.
-   Germline PPAP patients have constitutional POLE dysfunction, meaning all
-   cells (not just tumor cells) may have elevated mutation burden. Implications
-   for autoimmune toxicity and surveillance are not yet established.
+**Caveats:**
 
-2. **Truncation vs. EDM [T1, T2]:** EDM 66.7% ORR vs non-EDM 9.1%; LOP
-   82.4% CBR vs 30% for non-actionable (P=.013). Truncation is definitionally
-   non-LOP -- ICI response depends entirely on whether the tumor achieves
-   hypermutation via alternative mechanism (e.g., LOH). TMB-H pathway
-   (pembrolizumab) remains the strongest ICI basis IF TMB >10 mut/Mb.
-
-3. **Neoantigen quality [N1, N2]:** Clonal neoantigen presence -- not just
-   TMB -- drives ICI response. EDM tumors generate clonal neoantigens every
-   S-phase. Truncation + LOH may produce different clonal architecture
-   depending on when LOH occurs relative to tumor evolution.
-
----
-
-### Surveillance and Surgical Intervention
-
-**Mechanism link:**
-PPAP causes multi-focal polyposis with high progression risk. Ultra-hypermutation
-accelerates adenoma-to-carcinoma progression.
-
-**Standard of care:**
-
-- Annual / biennial colonoscopy with polypectomy
-- Upper GI endoscopy (POLE PPAP has duodenal polyp risk, less characterized
-  than APC-associated FAP but real)
-- Consider colectomy threshold based on polyp burden — lower threshold for
-  ultra-hypermutated cases where malignant transformation risk is accelerated
-- First-degree relative screening: if dominant inheritance confirmed, 50% risk
-  per offspring; colonoscopy from age 20–25 or 5 years before index case
+1. **Germline vs somatic.** Most ICI data derive from somatic hypermutators.
+   Constitutional proofreading deficiency (true PPAP) means normal tissues also
+   accumulate mutations; implications for immune-related adverse events are
+   not characterised.
+2. **Clonality.** EDM tumours generate clonal neoantigens from the first
+   division; a hypermutator acquired late (somatic hit, or H2-type LOH) yields
+   more subclonal neoantigens and plausibly weaker ICI response [N1].
 
 ---
 
-## Tier 2: Investigational Therapeutic Hypotheses
+### Surveillance, Surgery, and Cascade Testing
+
+**Mechanism link:** PPAP causes multifocal adenomatous polyposis (often
+attenuated) with accelerated adenoma-carcinoma progression.
+
+**NCCN Genetic/Familial High-Risk Assessment: Colorectal (2025) [G1], POLE/POLD1
+pathogenic/likely pathogenic carriers:**
+
+- High-quality colonoscopy from **age 25-30** (or 2-5 years before the
+  earliest CRC in the family if diagnosed <25).
+- Repeat every **2-3 years** if clear; every **1-2 years** if polyps found.
+- Upper GI endoscopy: duodenal neoplasia is reported in POLE and POLD1
+  carriers [P1, P4]; follow NCCN/EHTG duodenal surveillance guidance.
+- Colectomy threshold by polyp burden and endoscopic controllability [P3].
+
+**Cascade testing gate.** Offer cascade testing to relatives **only** when the
+variant is Likely Pathogenic or Pathogenic under a gene-disease assertion for
+which the applied criteria are valid (variant-interpretation.md Step 4). For a
+POLE truncation classified VUS for PPAP, cascade testing is a harm: it labels
+~1-in-500 carriers of a benign carrier state [P6] as at-risk, triggers
+surveillance without benefit, and cannot be undone once reported. Surveillance
+decisions for relatives in the interim should follow family history, not the
+variant.
+
+---
+
+## Tier 2: Investigational Classes
 
 ### Replication Stress Exploitation (ATR/CHK1 Inhibition)
 
-**Mechanism link:**
-POLE dysfunction creates persistent ssDNA gaps at the replication fork (normal
-proofreading removes misincorporated bases; failure leads to stalled fork
-structures). Stalled forks activate ATR-CHK1. POLE-deficient cells may be
-hyperdependent on ATR signaling for survival.
+**Mechanism link:** Proofreading-deficient or Pol ε-depleted cells accumulate
+ssDNA gaps and fork stalling, increasing dependence on ATR-CHK1 signalling.
 
-**Hypothesis:** ATR inhibition (ceralasertib, elimusertib, camonsertib) is
-synthetically lethal with POLE dysfunction in tumor cells, while normal cells
-(with residual POLE function) tolerate partial ATR loss.
+**Evidence:**
 
-**Evidence (updated 2024-2026):**
+- POLE3/POLE4 loss sensitises to ATR inhibition (CRISPR screen) [R1].
+- POLD1 is synthetic lethal with ATR in a 288-gene DNA-repair screen [R2];
+  POLD1 R689W increases ATRi/CHK1i sensitivity in CRC cells [R7].
+- POLA1-ATR synthetic lethality extends the B-family paradigm [R6].
+- RTEL1 deficiency is synthetic lethal with Pol ε loss [R8].
+- Meta-analysis of 10 trials / 810 patients: no overall benefit of ATR
+  inhibitors in unselected solid tumours [R5].
+- **Ceralasertib:** Phase III LATIFY (with durvalumab, previously treated
+  NSCLC, n = 594) did not meet its OS primary endpoint [T9].
+- **Elimusertib:** Phase I only (NCI Phase 1/2 active-not-recruiting; Bayer
+  Phase 1b with niraparib terminated). **Camonsertib:** Phase I/II.
 
-- Yeast: synthetic lethality between POLE and ATR (rad3/pol2)
-- POLE3/POLE4 loss causes ATR hypersensitivity [R1]
-- POLD1-ATR synthetic lethality [R2]; POLD1 R689W increases ATRi/CHK1i
-  sensitivity [R7]. B-family paradigm extends to POLA1 [R6]
-- ATR meta-analysis [R5]: no overall benefit unselected; biomarker selection critical
-- Elimusertib (2026): replication catastrophe in DDR-deficient cells
-- CMG helicase inhibitors (2024): ATP-competitive, new target class
-- Ceralasertib, elimusertib, camonsertib in Phase I/II. New agents YY2201,
-  AD1058 (brain-penetrant) in development. No POLE PPAP + ATRi trial (gap).
+**Status: hypothesis.** No POLE-selected ATR-inhibitor trial exists. Preclinical
+rationale applies to cells with a proofreading-deficient or depleted Pol ε --
+i.e. only if the tumour's mechanism is H0 (somatic EDM) or H1, and not to a
+tumour replicating with wild-type Pol ε.
 
-**Biomarker:** RPA32 S33 phosphorylation (replication stress marker) in tumor
-biopsies; increased in POLE-deficient tumors if this mechanism is active.
+**Biomarker:** pRPA32 (S33) in tumour biopsies as a replication-stress readout.
 
 ---
 
 ### Chain-Terminating Nucleoside Analogs (CTNAs)
 
-**Mechanism link:**
-POLE proofreading exonuclease normally removes chain-terminating nucleoside
-analogs (Ara-C, Ara-A, Ara-G, Ara-T, ddC, AZT, alovudine) from the 3' end
-of nascent DNA during replication. Proofreading-deficient POLE cannot excise
-these analogs, making POLE-exo-deficient cells selectively hypersensitive.
+**Mechanism link:** Pol ε/Pol δ 3′→5′ exonucleases excise incorporated
+chain-terminating analogs. Exonuclease-deficient cells cannot, so they are
+selectively sensitive.
 
-**Evidence (2025-2026):**
+**Evidence (preclinical only):**
 
-- **DNA Repair 2025:** POLE1exo-/- cells show 3-4x reduction in IC50 for
-  Ara-C. Polδ and Polε exonucleases independently contribute to Ara-C
-  tolerance; combined deficiency is additive.
-- **Cancer Science 2026 (Kawasumi et al.):** Comprehensive profiling of 12
-  nucleoside analogs across 24 DT40 mutant lines. POLE1exo-/- + CTF18-/-
-  shows strong synthetic lethality with Ara-C (CTF18 prevents Polε
-  dissociation from replication fork).
-- Different CTNAs show differential dependence on Polε vs Polδ exonuclease:
-  Ara-C requires Polε independently; ddC/AZT/alovudine require combined
-  Polδ+Polε deficiency for sensitivity.
+- POLE1exo-/- cells: Ara-C IC50 reduced 3-4x; Pol δ and Pol ε exonucleases
+  contribute independently [R3].
+- 12 nucleoside analogs × 24 DT40 mutant lines: POLE1exo-/- + CTF18-/- strongly
+  synthetic lethal with Ara-C; Ara-C depends on Pol ε exo alone, whereas
+  ddC/AZT/alovudine need combined Pol δ + Pol ε exo loss [R4].
 
-**Clinical implication for POLE-mutant tumors:**
-Ara-C (cytarabine) and related arabinosides represent a precision therapeutic
-for tumors with confirmed POLE exonuclease domain dysfunction. This is a
-mechanism-based vulnerability distinct from (and potentially combinable with)
-ICI therapy.
+**Limits:**
 
-**Caveat for truncation variants:** Truncation eliminates the entire protein,
-not just proofreading. The sensitivity profile may differ from EDM missense
-(which produces a protein that replicates but cannot proofread). If the tumor
-relies on the wild-type allele (LOH model), the remaining polymerase is
-fully proofreading-proficient and CTNAs would not be selectively effective.
-CTNAs are most relevant if the tumor has confirmed POLE-specific hypermutation
-signatures (SBS10a/b), regardless of the germline variant class.
+- Chicken DT40 and human cell-line data; no in-vivo or clinical data.
+- Cytarabine has no established activity or pharmacology in solid tumours
+  (short half-life, poor tumour penetration, myelotoxicity at effective doses).
+- Applies only when a **proofreading-deficient Pol ε is replicating the tumour**
+  (SBS10a/b present). A tumour relying on wild-type Pol ε (germline null allele,
+  H0 non-POLE driver) gains no selectivity.
+
+**Status: preclinical hypothesis.**
 
 ---
 
 ### PARP Inhibition (Context-Dependent)
 
-**Mechanism link:**
-If the POLE truncation variant causes fork collapse (not just error-prone
-synthesis), single-strand gaps may become double-strand breaks requiring
-HR. If HR is also compromised (germline BRCA1/2 co-mutation, or POLE-
-induced HR deficiency), PARP inhibition may be synthetic lethal.
+**Mechanism link:** Only if an HR defect co-exists (germline BRCA1/2, or an HRD
+signature). PPAP tumours are typically HR-proficient.
 
-**Caveat:** Standard POLE PPAP is HR-proficient. PARP inhibition is unlikely
-to be active unless there is a co-occurring HR deficiency. Assess HRD status
-(HRDetect or CHORD signature analysis on tumor WGS) before this hypothesis
-is prioritized.
-
-**Hypothesis priority:** LOW unless HRD signature is present in tumor WGS.
+**Status:** LOW unless HRDetect/CHORD [TOOL8] shows HRD on tumour WGS.
 
 ---
 
 ### Neoantigen Vaccine / Adoptive T-Cell Therapy
 
-**Mechanism link:**
-Ultra-hypermutated tumors (and premalignant polyps) in PPAP patients are
-predicted to contain a high density of tumor-specific frameshifted neoantigens.
-POLE-specific mutational signatures generate reproducible mutation contexts;
-shared neoantigens may exist across PPAP patients with similar POLE variants.
+**Mechanism link:** Ultra-hypermutated tumours and polyps carry dense
+frameshift neoantigens; POLE signatures produce recurrent mutation contexts,
+so shared neoantigens may exist across PPAP patients.
 
-**Therapeutic hypothesis:**
+**Hypotheses:** personalised neoantigen vaccine (adjuvant or prophylactic in
+polyps); shared-neoantigen vaccine if recurrent frameshift peptides are
+catalogued in POLE-hypermutator TCGA data; TIL/TCR-T against POLE neoantigens.
 
-- Personalized neoantigen vaccine targeting frameshifted peptides in this
-  patient's polyps and tumor (prophylactic or adjuvant)
-- Shared neoantigen vaccine if POLE-driven frameshifts generate recurrent
-  peptides across patients (check frameshift catalog from POLE hypermutator
-  TCGA data)
-- TIL or TCR-T therapy targeting POLE-neoantigen-specific T cells
-
-**Evidence tier:** Preclinical / early phase for hypermutated tumors generally.
-No PPAP-specific trials identified at time of writing. Check:
-
-- CT4 (neoantigen vaccine + nivolumab)
-- NCI ETCTN for POLE-specific expansion cohorts
+**Evidence tier:** preclinical / early-phase for hypermutated tumours generally
+[N3]; no PPAP-specific trial. Query ClinicalTrials.gov at run time.
 
 ---
 
 ### Chemoprevention (Polyp Burden Reduction)
 
-**Mechanism link:**
-If POLE proofreading failure begins early in colonocyte progenitors, the
-mutation burden accumulates before polyps are clinically visible. Chemoprevention
-targeting mutation rate (not just polyp growth) would be mechanistically
-superior to NSAIDs or aspirin, which target COX-dependent polyp proliferation.
-
-**Current options (limited):**
-
-- Aspirin / sulindac: evidence in FAP, some signal in PPAP (indirect, small
-  series); mechanism does not target mutation rate directly
-- Celecoxib: COX-2 inhibitor; used in FAP; being evaluated in PPAP pedigrees
-- **Mechanistically motivated but untested:** antioxidants targeting oxidative
-  mutagenesis (8-oxoguanine pathway), given that POLE proofreading failure
-  may particularly fail to correct oxidative lesions at certain sequence contexts
+- Aspirin / sulindac / celecoxib: evidence in FAP and Lynch (CAPP2); **no
+  PPAP-specific evidence**. Mechanism (COX-dependent proliferation) does not
+  address mutation rate.
+- No agent targets replication-error rate. Do not propose antioxidant /
+  8-oxoguanine strategies here: that pathway is MUTYH biology, not proofreading.
 
 ---
 
 ## Tier 3: Mechanism-Specific Hypotheses (This Variant)
 
-These hypotheses arise specifically from the unresolved mechanistic paradox
-of the p.54fs variant and have no precedent in PPAP literature.
+### If H1 (reinitiation → ΔN-POLE) is confirmed
 
-### If Dominant-Negative CMG Disruption Is Confirmed:
+- **Not a neoantigen.** Reinitiation at a native in-frame Met (Met66) yields
+  native POLE sequence from that point; there is no novel junction peptide.
+  Do not propose a vaccine against the ΔN protein.
+- The four aberrant residues encoded before the PTC (Gln53…Ter at codon 57)
+  exist only on the terminated 56-aa peptide. They are a neoepitope candidate
+  only if NMD escape **without** reinitiation is demonstrated (H5 territory,
+  not supported); check MHC-I binding [TOOL7] before any investment.
+- Therapeutic logic then follows PPAP: ICI by tumour TMB/LOP status; CTNA and
+  ATRi hypotheses apply to the tumour's ΔN-POLE-dependent replication.
+- Research target: the ΔN-POLE–PCNA interface. If weakened PCNA engagement is
+  the mechanism, it is a structural handle for understanding proofreading
+  switching [M3-M5], not a near-term drug target.
 
-**Target:** Replisome assembly / GINS-POLE interaction surface
+### If H0 (coincidence) is confirmed
 
-**Hypothesis:** Small molecules that stabilize wild-type POLE loading onto CMG
-(preventing competition by truncated fragment) could rescue replication fidelity
-in heterozygous PPAP cells. This is analogous to pharmacological chaperone
-strategies for conformational diseases.
-
-**Status:** No drugs in this class exist. This would be a first-in-class
-target requiring structural characterization of the POLE N-terminus / CMG
-interface as prerequisite.
-
-**Near-term translational step:** AlphaFold2 [S6] / cryo-EM modeling of
-truncated POLE N-terminal fragment. Note [M2]: catalytic domain dispensable
-for CMG assembly, so this target may be less viable. Consider Pol-epsilon/PCNA
-holoenzyme structures [M3, S3] as alternative structural basis.
-
-### If NMD Escape + Neomorphic Peptide Is Confirmed:
-
-**Target:** The truncated peptide itself (as a therapeutic neoantigen)
-
-**Hypothesis:** The frameshift-specific C-terminal sequence of the truncated
-POLE peptide is a germline-encoded neoantigen present in all cells of this
-patient. It may be targetable by peptide vaccine or CAR-T if surface-presented.
-
-**Caveat:** Intracellular targets require MHC-I presentation; confirm via
-HLA-peptide binding prediction [TOOL7] before investing in this hypothesis.
+No variant-specific therapeutic hypothesis. Record the case as an incidental
+POLE LoF carrier with a somatically driven hypermutator; contribute the
+germline allele to ClinVar with the tumour evidence (BP5-relevant if the tumour
+lacks SBS10 [C1]).
 
 ---
 
 ## Biomarker Strategy Summary
 
-| Biomarker                                      | Purpose                                               | Tier            |
-| ---------------------------------------------- | ----------------------------------------------------- | --------------- |
-| TMB >100 mut/Mb                                | ICI eligibility, response prediction                  | Established     |
-| MSI status (MSS)                               | Distinguishes POLE from Lynch mechanism               | Established     |
-| SBS10a/10b signature                           | Confirms POLE-specific hypermutation (vs. POLD1, MMR) | Established     |
-| LOP classification (JITC 2025)                 | ICI response stratification (LOP vs non-LOP)          | Emerging        |
-| LOH at 12q24 (tumor)                           | Informs haploinsufficiency mechanism                  | Investigational |
-| NeoPrecis clonal neoantigen score              | ICI response beyond TMB (+11-20% AUROC)               | Investigational |
-| AlphaMissense score (>0.87 for P/LP variants)  | Computational pathogenicity assessment                | Investigational |
-| Truncated POLE protein (WB/MS)                 | Confirms NMD escape, enables DN hypothesis            | Research        |
-| ATR pathway activation (pRPA32)                | Replication stress burden, ATRi stratification        | Research        |
-| HRD signature (HRDetect)                       | PARP inhibitor eligibility                            | Investigational |
-| Neoantigen load (clonal frameshifted peptides) | Vaccine target identification (quality > quantity)    | Research        |
-| CTNA sensitivity (Ara-C IC50)                  | Nucleoside analog therapy eligibility                 | Research        |
-| ctDNA dynamics                                 | ICI response monitoring (early response detection)    | Emerging        |
+| Biomarker                                       | Purpose                                                              | Tier            |
+| ----------------------------------------------- | -------------------------------------------------------------------- | --------------- |
+| Somatic POLE/POLD1 EDM hotspot (tumour)         | Identifies the actual proofreading-deficient allele (Step 0)         | Established     |
+| MMR IHC / MSI                                   | Distinguishes POLE from MMR mechanism; dMMR ICI pathway              | Established     |
+| TMB ≥10 mut/Mb (panel/WES)                      | ICI eligibility (tumour-agnostic pembrolizumab)                      | Established     |
+| SBS10a/10b/28 vs SBS10c/d vs SBS14/20 [SIG1-6]  | Assigns hypermutation to Pol ε, Pol δ, or MMR+polymerase             | Established     |
+| LOP classification [T2]                         | ICI response stratification (LOP vs non-LOP)                         | Emerging        |
+| ctDNA dynamics [T8]                             | ICI response monitoring                                              | Emerging        |
+| LOH at 12q24.33 (tumour)                        | Interpretable only with mutant-protein evidence (H2)                 | Investigational |
+| Clonal neoantigen score (NeoPrecis) [N2]        | ICI response beyond TMB                                              | Investigational |
+| HRD signature (HRDetect/CHORD) [TOOL8]          | PARP inhibitor eligibility                                           | Investigational |
+| ΔN-POLE protein (C-terminal WB / targeted MS)   | Confirms H1                                                          | Research        |
+| pRPA32 (S33)                                    | Replication-stress burden; ATRi stratification                       | Research        |
+| CTNA sensitivity (Ara-C IC50, patient organoid) | Nucleoside analog hypothesis                                         | Research        |
+| AlphaMissense / REVEL                           | Missense only; **not applicable** to truncations                     | N/A             |
 
 ---
 
 ## Case Report / Manuscript Recommendation
 
-For a variant with this profile, a case report + mechanistic commentary in
-a journal such as _npj Genomic Medicine_, _JNCI_, _Genetics in Medicine_, or
-_Human Mutation_ is appropriate. Frame it as:
+**Minimum before submission:** Step 0 complete and negative (germline
+confirmation; tumour EDM-hotspot sequencing negative; MMR IHC/MSI negative);
+signature decomposition reported with SNV count; RNA allele-ratio result; a
+C-terminal-antibody western or MS result. Without these, the report describes
+an incidental carrier, not a paradox, and reviewers will say so.
 
-1. Clinical description + variant characterization
-2. Mechanistic paradox statement (standard ACMG criteria vs. phenotypic severity)
-3. Ranked mechanistic hypotheses with proposed experiments
-4. Therapeutic implications (ICI as immediate; CMG/ATR as investigational)
-5. Call for registry / matchmaking: request contact from other centers with
-   POLE truncation cases
+Suitable venues: _npj Genomic Medicine_, _Genetics in Medicine_, _JNCI_,
+_Human Mutation_, _Familial Cancer_. Frame as:
 
-This framing serves both the scientific record and the patient's family —
-establishing the variant's pathogenicity in print supports cascade testing
-for at-risk relatives.
+1. Clinical description and variant characterisation (HGVS validated).
+2. Phenocopy exclusion (Step 0) and signature evidence.
+3. Mechanistic hypotheses with the reinitiation scan and essential-gene
+   argument; proposed/performed experiments.
+4. Classification outcome with points tally and gene-disease assertion
+   discussion; explicit statement that relatives were not cascade-tested on a
+   VUS.
+5. Therapeutic implications by tumour mechanism.
+6. Call for matching (Matchmaker Exchange [D7]; ClinVar submission).

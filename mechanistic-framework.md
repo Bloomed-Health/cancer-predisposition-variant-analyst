@@ -2,263 +2,324 @@
 title: Mechanistic Framework
 impact: CRITICAL
 impactDescription: Generating the right mechanistic hypotheses determines which experiments are run and which therapeutic targets are nominated
-tags: mechanistic-hypothesis,POLE,PPAP,dominant-negative,haploinsufficiency,NMD,CMG-complex,replication-fidelity,paradox-resolution
+tags: mechanistic-hypothesis,POLE,PPAP,reinitiation,NMD,essential-gene,mutational-signature,replication-fidelity,paradox-resolution
 ---
 
 # Mechanistic Framework
 
 A structured method for resolving genotype-phenotype paradoxes in ultra-rare
-variants. The working example is the **POLE p.~54fs paradox**: a truncation
-eliminating all canonical functional domains that nonetheless produces a
-classical ultra-hypermutated PPAP phenotype.
+variants. The working example is the **POLE exon-2 frameshift
+NM_006231.4:c.158_159del p.(Leu53Glnfs\*5)**: a premature termination codon at
+codon 57 of 2,286 that, on paper, eliminates every functional domain yet is
+reported with an ultra-hypermutated PPAP-like phenotype.
 
 The framework generalizes to any multi-domain disease gene where a truncation
-outside the canonical disease-causing region produces the expected phenotype.
+outside the canonical disease-causing region co-occurs with the canonical
+phenotype.
+
+**Entry condition:** Step 0 of [variant-interpretation.md](variant-interpretation.md#step-0-genotype-verification-and-differential-diagnosis)
+is complete and negative (germline status confirmed, no somatic EDM hotspot, no
+MMR deficiency, no second POLE variant). If Step 0 was skipped, stop and do it:
+most "paradoxes" dissolve there.
+
+---
+
+## Pre-checks: Essential-Gene Filter and Signature Fork
+
+Run both before enumerating mechanisms. They prune the hypothesis space more
+cheaply than any experiment.
+
+### Essential-gene filter
+
+Ask: is the gene cell-essential? Check DepMap common-essential status [M10].
+
+- **Essential (POLE: yes).** A tumour cell cannot survive with zero protein.
+  Therefore any two-hit model (germline allele + somatic loss of the wild-type
+  allele) is viable **only if the germline allele is hypomorphic** -- it must
+  still produce a protein that replicates DNA. A true null allele plus LOH of
+  the wild-type allele is a dead cell, not a hypermutated tumour.
+- The POLD1 L474P precedent [M1] (heterozygous: ~8 mut/Mb; after somatic loss
+  of WT: >141 mut/Mb) works precisely because L474P is a proofreading-dead but
+  replication-competent hypomorph. It is not a precedent for a null allele.
+- Consequence for p.(Leu53Glnfs\*5): "haploinsufficiency + LOH" is inviable
+  **unless** the allele produces a protein (see H1). Rank accordingly.
+
+### Signature fork
+
+Decompose tumour SBS signatures (WGS preferred; WES acceptable with ≥80 SNVs).
+
+| Tumour shows                               | Inference                                                                                                                                                                       | Next                              |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| SBS10a/SBS10b ± SBS28 [SIG1, SIG2, SIG4]   | A proofreading-deficient **Pol ε is replicating DNA in this tumour**. A PTC-57 allele cannot supply it. Find the allele that does: somatic EDM on the WT allele (Step 0), a reinitiation product (H1), a second cis variant (Step 0). | H1 pipeline if Step 0 negative    |
+| SBS10c/SBS10d [SIG3, M9]                   | Pol δ proofreading deficiency. POLE allele is a bystander.                                                                                                                      | POLD1 germline + somatic workup   |
+| SBS14 or SBS20 [SIG6, SIG5]                | Polymerase proofreading + MMR deficiency. Look for CMMRD / Lynch with secondary polymerase hit [M11].                                                                             | MMR IHC, germline MMR genes       |
+| SBS6/15/26/44 without SBS10                | MMR deficiency alone.                                                                                                                                                           | Lynch / CMMRD workup              |
+| SBS18/SBS36                                | 8-oxoG pathway (MUTYH).                                                                                                                                                         | MUTYH germline                    |
+| CpG>T excess (SBS1-like) with polyposis    | Consider MBD4 [P7].                                                                                                                                                             | MBD4 germline                     |
+| None of the above; TMB elevated            | Hypermutation is not POLE-driven; the germline LoF allele is incidental.                                                                                                        | Exit framework; classify as VUS   |
+
+The fork is also the basis for the gene-specific ACMG codes in [C1] (PP4_Strong
+when ≥2 tumours carry SBS10a/b/28/14 at ≥5%; BP5 when ≥2 tumours with >1 mut/Mb
+lack them) -- see variant-interpretation.md Step 4 for how those codes apply to a
+non-exonuclease-domain allele.
 
 ---
 
 ## The Paradox Resolution Protocol
 
-When a variant eliminates all known functional domains yet produces canonical
-disease phenotype, resist the urge to default to "haploinsufficiency" without
-systematic reasoning. Work through all five mechanisms before ranking.
-
-> **Fundamental question (added 2024):** Is this actually PPAP, or a phenocopy
-> arising from a different mechanism? PPAP is defined by a functional-but-error-
-> prone polymerase (EDM missense). A truncation producing a similar phenotype
-> may represent a distinct entity -- "POLE truncation-associated hypermutation
-> syndrome" -- with different mechanism, prognosis, and therapeutic implications.
-
 ```
-Paradox detected
+Step 0 negative + pre-checks done
     ↓
-1. Confirm phenotype is real (not incidental finding)
+1. Confirm the phenotype is real and specific (not an incidental finding)
     ↓
-2. Enumerate all mechanisms that could produce phenotype
+2. Enumerate all mechanisms that could produce the phenotype (H0–H5 below)
     ↓
-3. Identify experimental discriminators for each
+3. For each: does it predict the observed signature? Is it viable in an
+   essential gene? Does the retained sequence support it?
     ↓
-4. Rank by prior probability + available evidence
+4. Rank by prior probability × consistency with data in hand
     ↓
-5. Identify minimum experiment set that collapses the hypothesis space
+5. Identify the minimum experiment set that collapses the space
 ```
 
 ---
 
-## The Five Mechanisms (POLE p.54fs as worked example)
+## Hypotheses (POLE p.(Leu53Glnfs\*5) as worked example)
 
-### Mechanism 1: Haploinsufficiency with Somatic LOH
+### H0: Coincidence / phenocopy (null hypothesis)
 
-**Hypothesis:** One functional POLE allele is sufficient in normal tissue, but
-tumor cells acquire loss of the wild-type allele (LOH, promoter silencing,
-second somatic mutation), creating functional POLE nullizygosity. This
-replicates the two-hit model without requiring the truncated protein to have
-any activity.
+**Hypothesis:** The germline frameshift is an incidental finding. The tumour's
+hypermutation has a different driver -- a somatic POLE exonuclease-domain
+mutation on the wild-type allele, a somatic POLD1 EDM, or MMR deficiency.
 
-**Why plausible for POLE p.54fs:**
+**Why it is the prior-favoured explanation:**
 
-- **POLD1 recessive effect [M1]:** Heterozygous POLD1 L474P has only a
-  subtle effect (~8 mut/Mb). Hypermutation requires somatic LOH of WT allele
-  (>141 mut/Mb with LOH). A null allele (truncation) behaves identically
-  once somatic LOH occurs.
-- LOH at 12q24 (POLE locus) is observed in PPAP-associated tumors
-- A p.54fs allele effectively creates a null allele; if wild-type is lost in
-  the tumor, outcome is identical to biallelic LoF
-- This is the most parsimonious mechanism: requires no truncated protein
-  expression, no NMD escape, and no novel protein function
+- Heterozygous POLE LoF carriers: ~0.2% of controls (0.20% vs 0.22% in cancer
+  cases; no enrichment) [P6]. That is ~1 in 500 people.
+- Somatic POLE EDM hotspots (P286R, V411L, S459F, A456P, F367S, L424V, M444K,
+  P436R): ~1–2% of CRC, ~7–10% of endometrial cancer.
+- Expected co-occurrence: 1/500 × 1–2% ≈ 2–4 per 100,000 CRC. With >1 million
+  CRC diagnoses per year worldwide, tens of such coincidences occur annually.
+  A single such case is not evidence for a new mechanism.
+- CMMRD with a secondary somatic POLE/POLD1 EDM hit produces the highest TMBs
+  recorded (>250 mut/Mb) and presents with polyposis [M11].
 
-**Discriminating experiment:**
+**Discriminators:** Tumour sequencing of the full POLE/POLD1 exonuclease domains;
+MMR IHC + MSI; signature decomposition (fork above). All are part of Step 0.
 
-- Tumor vs. germline SNP array or WGS: look for LOH at 12q24.33
-- Tumor RNA-seq: allelic imbalance of POLE transcripts in tumor
-- If LOH confirmed → this mechanism is sufficient and may be primary
-
-**Weakness:** Does not explain ultra-hypermutation in early (pre-LOH) lesions
-if those are present. If adenomas show the hypermutation signature before LOH,
-another mechanism must be active earlier.
+**If positive:** stop. Classify the germline variant as VUS for PPAP (or
+B/LB if ClinVar/PolED evidence supports); therapy follows the somatic mechanism.
 
 ---
 
-### Mechanism 2: Dominant Negative via CMG Complex Disruption
+### H1: Translation reinitiation → ΔN-POLE (leading true-paradox mechanism)
 
-**Hypothesis:** The first 53 amino acids of POLE include surfaces that interact
-with the CMG (Cdc45-MCM-GINS) helicase complex. The truncated protein is
-expressed (NMD escape, even partial) and competes with wild-type POLE for CMG
-binding, but cannot contribute functional polymerase or proofreading activity.
-This titrates wild-type POLE away from the replisome in a dominant-negative fashion.
+**Hypothesis:** The frameshift transcript escapes NMD (partially or fully) and
+ribosomes reinitiate at a downstream in-frame AUG, producing an N-terminally
+truncated but otherwise full-length POLE that retains the exonuclease domain
+(aa 268–471), the polymerase domain, and the C-terminal CMG-binding half -- but
+lacks part of the N-terminal PCNA interface.
 
-**Structural basis:**
+**Sequence basis (computed on ENST00000320574 CDS):**
 
-- POLE N-terminus contains a P-domain and GINS-interaction surface
-- Psf1 (GINS subunit) binds POLE N-terminal region; disruption impairs
-  leading-strand synthesis handoff
-- A truncated fragment retaining only the CMG-binding surface but lacking
-  polymerase activity would poison replisome assembly
+| In-frame Met | Codons past PTC-57 | Kozak (−3 / +4)   | Context  |
+| ------------ | ------------------ | ----------------- | -------- |
+| **Met66**    | 9                  | ATTAAC**ATG**C    | adequate |
+| Met221       | 164                | GTGGAC**ATG**C    | adequate |
+| Met294/295   | 237                | CAGATT**ATG**A    | adequate |
+| Met299       | 242                | TCCTAC**ATG**A    | weak     |
+| **Met359**   | 302                | ACCATC**ATG**G    | strong   |
 
-> **DOWNGRADED [M2]:** POLE1 catalytic N-terminal domain is dispensable for
-> CMG assembly in human cells. A 53aa fragment would NOT disrupt CMG assembly
-> -- the yeast precedent (pol2-04) does NOT translate. However, the fragment
-> could still disrupt later steps requiring the catalytic domain.
+Reinitiation efficiency is highest when the terminated uORF is short and the
+next AUG is close; Met66 (9 codons downstream, adequate context) is the prime
+candidate. The product, ΔN65-POLE, lacks aa 1–65.
+
+**Why the ΔN product could be error-prone rather than simply functional:**
+
+- The POLE N-terminal 23 residues are disordered, and the PIP-motif, P-domain
+  and thumb form a three-point interface with all three PCNA protomers [M3].
+  Deleting the N-terminal segment removes or destabilises the PIP contact.
+- Proofreading requires an intact Pol ε–PCNA holoenzyme that switches the
+  primer between pol and exo sites [M4, M5]. A weakened PCNA interface is a
+  plausible route to reduced proofreading with retained synthesis -- the same
+  functional class (replicates, cannot proofread) as classical EDM alleles.
+- This is therefore the **only listed mechanism by which the mutant allele
+  itself could generate SBS10a/b**, and it reduces the "paradox" to classical
+  PPAP biology from a non-ED allele.
+
+**Precedent:** BRCA1 c.68_69del (185delAG) places a PTC in exon 3; translation
+reinitiates at Met297 and yields a RING-less BRCA1 that is stable, partially
+functional, and clinically consequential (PARP-inhibitor/platinum resistance)
+[M8]. See [examples/brca1-c68_69del.md](examples/brca1-c68_69del.md).
 
 **Discriminating experiments:**
 
-- NMD assay: treat patient-derived cells with cycloheximide (CHX) or
-  NMD inhibitor (NMDI-14); Western blot for truncated POLE fragment (~6 kDa)
-- Co-IP: immunoprecipitate CMG components (Psf1, Cdc45, MCM2) from patient
-  cells; probe for truncated POLE N-terminal peptide
-- Proximity ligation assay (PLA): visualize truncated POLE / CMG co-localization
-  at replication forks in patient-derived fibroblasts
-- Complementation: re-introduce full-length POLE cDNA into patient cells;
-  rescue of mutation burden rate confirms dominant mechanism
+1. Allele-specific RT-qPCR / RNA-seq on patient normal tissue or LCLs ± CHX
+   (or NMDI-14): mutant/WT transcript ratio. Full NMD (<10% mutant) weakens H1
+   but does not exclude it -- reinitiation itself protects transcripts from NMD.
+2. Western blot with a **C-terminal** anti-POLE antibody on patient cells: look
+   for a band ~7 kDa smaller than full-length (ΔN65 ≈ 254 kDa vs 261 kDa).
+   Resolution is marginal; confirm by targeted mass spectrometry showing loss
+   of N-terminal tryptic peptides (aa 1–65) in a fraction of POLE.
+3. Reporter: express ΔN65-POLE cDNA in POLE-exo-reporter or POLE-conditional
+   cells; measure mutation rate (HPRT or fluctuation assay) and PCNA
+   co-immunoprecipitation versus WT and versus P286R.
+4. Patient-derived organoids: mutation accumulation over passages with
+   signature decomposition. Grade all functional results per [C9].
 
-**Weaknesses:**
-
-- 53 aa is a small fragment -- may not fold stably enough to compete for any
-  binding. Structural modeling (AlphaFold2 for isolated N-terminal fragment)
-  should be done before committing experimental resources.
-- Human POLE1 catalytic domain is dispensable for CMG assembly (Vipat 2022),
-  undermining the core yeast-derived rationale for this mechanism.
-
----
-
-### Mechanism 3: NMD Escape with Neomorphic N-terminal Peptide
-
-**Hypothesis:** The frameshift mRNA escapes NMD via unknown mechanism (upstream
-ORF, internal IRES, exon junction complex geometry), producing a stable
-53-amino-acid peptide. This peptide has a neomorphic function not present in
-full-length POLE — e.g., acting as a dominant repressor of DNA damage response
-or checkpoint activation, thereby allowing mutant cells to evade surveillance.
-
-**Why non-trivial:**
-
-- Early truncations (exon 1–3) occasionally escape NMD via reinitiation
-  downstream of the premature stop
-- The 53 aa fragment may be stable if intrinsically disordered regions are
-  absent (check with IUpred3 or ESpritz)
-- Neomorphic peptide phenotypes are documented in oncology (e.g., IDH1/2
-  gain-of-function from missense produces oncometabolite; analogous logic
-  applies to aberrant peptides)
-
-**Discriminating experiments:**
-
-- Allele-specific RT-PCR on patient RNA: is frameshift transcript present?
-- Ribosome profiling (Ribo-seq): is the truncated ORF being translated?
-- Mass spectrometry: targeted proteomics for the unique peptide sequence
-  within aa 1–53 (frameshift-specific C-terminus as neoepitope)
+**Weaknesses:** No published demonstration of POLE reinitiation. Reinitiation
+efficiency in vivo is typically low (single-digit percent of WT output); whether
+that is enough to perturb fidelity is unknown. If the ΔN protein is fully
+proofreading-proficient, H1 is excluded.
 
 ---
 
-### Mechanism 4: POLD1 Compensatory Error Induction
+### H2: Hypomorphic allele + somatic loss of the wild-type allele
 
-**Hypothesis:** With POLE activity compromised (by any of the above mechanisms),
-leading-strand replication is partially handed off to POLD1 (Pol δ), which
-normally handles the lagging strand. POLD1 on the leading strand produces a
-distinct but overlapping mutational signature and has lower processivity in
-this context, contributing to elevated TMB.
+**Hypothesis:** The two-hit model of [M1], applied correctly. Viable **only if
+H1 (or H3) supplies a replication-competent product from the mutant allele**.
+Then somatic LOH at 12q24.33, or a second somatic POLE hit, leaves the tumour
+with ΔN-POLE as its sole Pol ε, and hypermutation follows.
 
-**Supporting evidence:**
+**Status:** Conditional on H1. Not an independent mechanism for a null allele
+(see essential-gene filter).
 
-- POLE and POLD1 PPAP tumors share C>A/T>G signatures but have distinct
-  fine-scale profiles (COSMIC SBS28 vs SBS10a/10b)
-- Pol δ can substitute for Pol ε on the leading strand in yeast when Pol ε
-  is absent, with reduced fidelity
-- This mechanism may be additive rather than primary
-
-**Discriminating experiment:**
-
-- Mutational signature analysis of patient tumor WGS: decompose into COSMIC SBS
-  signatures; predominance of SBS10a/b (POLE-specific) vs SBS10c/d (POLD1)
-  vs SBS28 (POLD1-associated leading-strand errors) informs which polymerase
-  is generating the hypermutation
+**Discriminators:** Tumour LOH at 12q24.33 (SNP array / WGS allelic imbalance);
+tumour RNA allele ratio. LOH **without** evidence of a mutant-allele protein
+product is uninterpretable: either the LOH removed the mutant allele (WT tumour,
+no paradox) or the tumour is impossibly POLE-null (re-check the call).
 
 ---
 
-### Mechanism 5: Trans-Regulatory Effect on PCNA/RFC Loading
+### H3: Alternative splicing or alternative transcript bypassing the PTC
 
-**Hypothesis:** POLE N-terminus participates in RFC (Replication Factor C) /
-PCNA clamp loading at the leading strand. Disruption by the truncated fragment
-impairs PCNA loading globally, which secondarily reduces proofreading efficiency
-across both strands (as PCNA stimulates 3′→5′ exonuclease activity of multiple
-replicative polymerases).
+**Hypothesis:** The PTC is skipped at the RNA level -- in-frame exon skipping,
+an alternative promoter, or a transcript whose start codon lies downstream.
 
-**Why lower priority:**
+**Sequence check (ENST00000320574):** Exon 1 contributes 62 coding nt; exon 2 is
+142 nt (c.63–c.204). 142 mod 3 = 1, so skipping exon 2 shifts the frame; exon
+2+3 (223 nt) and 2+3+4 (268 nt) likewise. **No in-frame exon-skip rescue
+exists.** Ensembl's only other protein-coding POLE transcript (POLE-207,
+ENST00000535270, 2,259 aa) shares exon 2 and merely skips the in-frame 81-nt
+exon 3, so it carries the same PTC; the remaining transcripts are
+NMD/retained-intron biotypes. No annotated transcript bypasses exon 2.
 
-- Less structurally characterized than CMG interaction
-- Would predict a broader genomic instability phenotype rather than the
-  ultra-specific hypermutation signature of PPAP
-- Mutational signature analysis can rule this in/out (expect broader SBS
-  profile, not POLE-specific)
+**Status:** Low. Retained only because RNA-seq is cheap and junction evidence
+would be decisive.
 
----
-
-## Hypothesis Ranking Table (updated with 2022-2024 evidence)
-
-| Rank | Mechanism                        | Prior probability | Key evidence needed                | Change from v1.0              |
-| ---- | -------------------------------- | ----------------- | ---------------------------------- | ----------------------------- |
-| 1    | Haploinsufficiency + somatic LOH | **HIGHEST**       | Tumor LOH at 12q24                 | Upgraded (EJHG 2024)          |
-| 2    | NMD escape + neomorphic peptide  | MEDIUM            | Allele-specific RNA-seq + MS       | Unchanged                     |
-| 3    | POLD1 compensatory errors        | MEDIUM (additive) | Mutational signature decomposition | Unchanged                     |
-| 4    | Dominant-negative CMG disruption | **LOW-MEDIUM**    | NMD escape + Co-IP                 | Downgraded (Vipat 2022)       |
-| 5    | Trans-regulatory PCNA/RFC effect | LOW-MEDIUM        | PCNA ChIP + RFC interaction assay  | Slight upgrade (cryo-EM 2024) |
-
-**Rationale for reranking:**
-
-- LOH upgraded: POLD1 recessive effect [M1] + BIR-induced LOH mechanism [M6]
-- CMG disruption downgraded: catalytic domain dispensable for CMG assembly [M2]
-- PCNA/RFC upgraded: three-point holoenzyme interface [M3], proofreading
-  intermediates require intact holoenzyme [M4, M5]
-- Field consensus [C2]: "LoF variants cannot cause ultramutated cancers"
-
-**Structural implication:** Cryo-EM data [M3-M5] explains WHY EDM missense
-causes PPAP (mutant assembles but fails at proofreading) and WHY truncation
-should NOT (cannot assemble into holoenzyme). The p.54fs paradox is therefore
-sharper than ever -- if confirmed, it represents a truly novel mechanism.
+**Discriminator:** RNA-seq junction counts across exons 1–4; 5′ RACE if an
+alternative TSS is suspected.
 
 ---
 
-## Minimum Discriminating Experiment Set (updated priority order)
+### H4: Pol δ compensation on the leading strand (additive at most)
 
-To collapse the hypothesis space with maximum efficiency, prioritized by
-cost-effectiveness and the updated hypothesis ranking:
+**Hypothesis:** Reduced Pol ε output (via any viable mechanism above) shifts
+leading-strand synthesis toward Pol δ, adding Pol δ-type errors.
 
-1. **Tumor vs. germline SNP array / WGS LOH at 12q24** -- confirms or excludes
-   the now-highest-ranked mechanism (haploinsufficiency + LOH). Cheapest and
-   most likely to be informative given POLD1 recessive effect precedent.
-2. **Tumor WGS mutational signature decomposition** (SBS10a/b vs SBS28 vs other)
-   -- rules in/out POLD1 compensatory and trans-regulatory mechanisms. Also
-   confirms POLE-specific hypermutation vs other signature origins.
-3. **Patient-derived cell RNA-seq with NMD inhibition** -- confirms NMD fate of
-   frameshift transcript; prerequisite for all protein-level experiments.
-   If NMD is complete, mechanisms 2-3 are excluded and LOH becomes the sole
-   viable explanation.
-4. **Western blot for truncated POLE (anti-N-terminal antibody)** -- direct
-   evidence of NMD escape and truncated protein production. Only proceed if
-   step 3 suggests NMD escape.
-5. **CMG co-IP (Psf1 pulldown, probe for N-terminal POLE fragment)** -- tests
-   dominant-negative CMG disruption. Lower priority given Vipat 2022 findings
-   that N-terminal catalytic domain is dispensable for CMG assembly in human cells.
+**Signature expectation (corrected):** Pol δ proofreading errors produce
+SBS10c/SBS10d with lagging-strand bias [SIG3, M9]. SBS28 is **not** a Pol δ
+signature; it co-occurs with SBS10a/b in POLE-exo-deficient tumours [SIG4].
+Human cells expressing only the POLE C-terminal half replicate slowly using Pol
+δ [M2], but with proofreading-proficient Pol δ this does not generate SBS10c/d
+at scale.
 
-Steps 1-2 can be done on existing tissue. Steps 3-5 require patient-derived
-cells (fibroblasts, LCLs, or organoids).
+**Status:** Additive at most; only meaningful after H1/H2 are established.
 
-> **Decision tree:** If step 1 confirms LOH, the mechanism is resolved (two-hit
-> model). Proceed to signature analysis (step 2) for characterization but do not
-> invest in steps 3-5 unless the LOH finding is ambiguous or absent in early
-> (pre-malignant) lesions.
+---
+
+### H5: Dominant-negative N-terminal fragment -- not supported
+
+The native-sequence portion of the predicted peptide is 52 aa (plus 4 aberrant
+residues before the stop). Earlier versions of this skill proposed that it
+competes for CMG binding. That premise is wrong: the CMG/GINS interface of POLE
+is in the **C-terminal** non-catalytic half (zinc-finger region → POLE2 →
+Psf1/MCM5; thumb of the inactive polymerase domain → MCM2/Cdc45) [M2, M7].
+Nothing in aa 1–65 contacts CMG. The only N-terminal partner is PCNA via a
+largely disordered region [M3]; a free 56-aa peptide competing for PCNA pockets
+would, if anything, cause broad replication stress, not the POLE-specific SBS10
+signature. A 6-kDa fragment from a transcript that is also NMD-targeted is
+unlikely to reach competitive concentration. Discard unless proteomics
+unexpectedly detects the peptide at high abundance.
+
+---
+
+## Hypothesis Ranking Table
+
+| Rank | Hypothesis                                   | Prior             | Produces SBS10a/b from the mutant allele? | Key discriminator                                   | Change from v1.2                                          |
+| ---- | -------------------------------------------- | ----------------- | ----------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
+| 0    | H0 Coincidence / phenocopy                   | **HIGHEST**       | No (another driver does)                  | Tumour EDM hotspots, MMR IHC, signatures            | New; was absent                                           |
+| 1    | H1 Reinitiation → ΔN-POLE                    | MEDIUM            | **Yes** (if PCNA interface impaired)      | RNA allele ratio; C-term western/MS; ΔN65 reporter  | New; replaces "53-aa neomorphic peptide"                  |
+| 2    | H3 Alternative splicing / transcript         | LOW               | Only if an in-frame product exists (none found) | RNA-seq junctions                               | New                                                       |
+| 3    | H2 Hypomorph + LOH of WT                     | Conditional on H1 | Yes, via H1 product                       | LOH at 12q24.33 **plus** mutant protein evidence    | Was rank 1 as "haploinsufficiency + LOH"; inviable for a null |
+| 4    | H4 Pol δ compensation                        | Additive          | No (SBS10c/d)                             | SBS10c/d fraction                                   | Signature attribution corrected (SBS28 ≠ Pol δ)           |
+| 5    | H5 Dominant-negative N-terminal fragment     | Not supported     | No                                        | Proteomics (negative expected)                      | Was rank 4 "CMG disruption"; premise false                |
+| --   | PCNA/RFC trans-regulatory effect             | Removed           | --                                        | --                                                  | Folded into H5; no structural basis                       |
+
+**What changed and why:** v1.2 ranked "haploinsufficiency + somatic LOH" first by
+analogy to POLD1 L474P. That analogy fails for a null allele in an essential
+gene [M10]. v1.2 also placed a CMG-binding surface in aa 1–50; the CMG interface
+is C-terminal [M2, M7]. The structural data that v1.2 cited to sharpen the
+paradox [M3–M5] actually point to the resolution: an N-terminally truncated
+POLE that assembles but engages PCNA imperfectly is the mechanistically
+coherent way for this allele to behave like an EDM allele.
+
+---
+
+## Minimum Discriminating Experiment Set
+
+Ordered by information per unit cost. Steps 1–2 use existing tumour tissue;
+3–4 need patient-derived cells; 5 is a functional study.
+
+1. **Tumour WGS (or WES + SNP array) with germline comparison.** One assay
+   answers four questions: somatic POLE/POLD1 EDM hotspot (H0); signature
+   decomposition (fork); LOH / allelic imbalance at 12q24.33 (H2); somatic or
+   germline MMR gene status (H0). Require ≥80 SNVs for signature calls; WGS
+   preferred.
+2. **MMR IHC (MLH1/MSH2/MSH6/PMS2) and MSI.** Cheap, routine, excludes the
+   most common hypermutator phenocopy.
+3. **RNA-seq of tumour and normal tissue (or LCLs ± CHX).** Mutant/WT allele
+   ratio (NMD fate), exon 1–4 junction usage (H3), tumour allelic expression
+   (H2).
+4. **Western blot with a C-terminal POLE antibody ± targeted MS** on patient
+   fibroblasts/LCLs. Direct test of H1. Proceed regardless of step 3 result,
+   since reinitiation can stabilise the transcript.
+5. **Functional assay of ΔN65-POLE** (reporter mutation rate, PCNA co-IP,
+   organoid mutation accumulation). Required before any PS3 claim; grade per
+   [C9] with validated controls (WT, P286R, exo-dead D275A/E277A).
+
+> **Decision tree.** Step 1 shows a somatic EDM hotspot or step 2 shows MMR loss
+> → H0; stop; classify VUS; therapy follows the somatic mechanism. Step 1 shows
+> no SBS10a/b → H0 (non-POLE driver); stop. Step 1 shows SBS10a/b with no
+> somatic EDM and no second germline variant → proceed to steps 3–5 (H1/H3).
+> LOH at 12q24.33 is interpretable only after step 4.
 
 ---
 
 ## Generalizable Paradox Template
 
-For any gene X where a truncation outside canonical domain Y produces the
+For any gene X where a truncation outside canonical domain Y co-occurs with the
 canonical Y-loss phenotype:
 
 ```
-1. Map retained sequence to known interaction surfaces (structure databases,
-   STRING, BioGrid, PDB)
-2. Query NMD probability (rule based + NMDpreddict / NMDetective)
-3. Check for dominant-negative precedent in gene family (yeast models, CRISPR screens)
-4. Pull mutational signature if phenotype is genomic instability
-5. Rank: (LOH + haploinsufficiency) vs (DN via retained interaction surface)
-   vs (neomorphic peptide) vs (downstream compensatory polymerase error)
+0. Coincidence prior: carrier frequency of this allele class × rate of
+   somatic/phenocopy explanations for the phenotype. If the product is not
+   negligible at population scale, H0 is the default.
+1. Genotype verification: germline vs mosaic, full-gene coverage, phasing,
+   tumour sequencing for somatic drivers (variant-interpretation.md Step 0).
+2. Essential-gene check (DepMap [M10]): if essential, two-hit models need a
+   hypomorph; a null + LOH is inviable.
+3. Reinitiation scan: in-frame AUGs downstream of the PTC, Kozak context,
+   distance from PTC; predicted ΔN product and which domains/motifs it loses
+   (scripts/hgvs_validate.py does this). Precedent: BRCA1 185delAG [M8].
+4. Isoform / exon-skip check: exon length mod 3; alternative transcripts and
+   promoters (Ensembl).
+5. NMD probability (rule-based + NMDetective [M12, TOOL6]).
+6. Map retained sequence to interaction surfaces (UniProt [S5], PDB, AlphaFold
+   [S6], STRING/BioGRID). Verify the interface location against primary
+   structural papers, not reviews.
+7. Biomarker fork: if the phenotype has a molecular readout (mutational
+   signature, metabolite, IHC), ask which allele/protein could produce it.
+8. Rank: coincidence vs reinitiation/ΔN product vs isoform bypass vs
+   hypomorph+LOH vs dominant-negative via a verified retained surface.
 ```
